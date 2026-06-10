@@ -244,15 +244,10 @@ function StickerCard({ team, stickers, onClick }) {
           <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontWeight: 700, minWidth: 24 }}>{haveCount}/20</span>
         </div>
 
-        {dupCount > 0 && (
-          <div style={{
-            marginTop: 4,
-            fontSize: 9, color: "#f5a623", fontWeight: 800,
-          }}>🔁 {dupCount} dup{dupCount > 1 ? "s" : ""}</div>
-        )}
-        {isComplete && (
-          <div style={{ marginTop: 4, fontSize: 9, color: "#27ae60", fontWeight: 800 }}>✓ Complete</div>
-        )}
+        <div style={{ marginTop: 4, fontSize: 9, fontWeight: 800, height: 13 }}>
+          {dupCount > 0 && <span style={{ color: "#f5a623" }}>🔁 {dupCount} dup{dupCount > 1 ? "s" : ""}</span>}
+          {isComplete && <span style={{ color: "#27ae60" }}>✓ Complete</span>}
+        </div>
       </div>
     </button>
   );
