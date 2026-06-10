@@ -202,7 +202,7 @@ function StickerCard({ team, stickers, onClick }) {
       }} />
 
       {/* Card body */}
-      <div style={{ padding: "8px 10px 10px", position: "relative" }}>
+      <div style={{ padding: "8px 10px 10px", position: "relative", textAlign: "left" }}>
         {/* Code badge top-right */}
         <div style={{
           position: "absolute", top: 8, right: 8,
@@ -216,7 +216,7 @@ function StickerCard({ team, stickers, onClick }) {
         }}>{team.code}</div>
 
         {/* Flag */}
-        <div style={{ fontSize: 28, marginBottom: 4, lineHeight: 1 }}>{team.flag}</div>
+        <div style={{ fontSize: 24, lineHeight: 1, marginBottom: 4, textAlign: "left" }}>{team.flag}</div>
 
         {/* Team name */}
         <div style={{
@@ -226,6 +226,7 @@ function StickerCard({ team, stickers, onClick }) {
           lineHeight: 1.2,
           marginBottom: 5,
           paddingRight: 28,
+          textAlign: "left",
           whiteSpace: "nowrap",
           overflow: "hidden",
           textOverflow: "ellipsis",
@@ -526,7 +527,7 @@ export default function App() {
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Sticker Tracker</div>
             </div>
             <button onClick={() => setShowShare(true)} style={{
-              background: "#f5c842", color: "#f5f0e8", border: "none",
+              background: "#f5c842", color: "#0a1f0f", border: "none",
               borderRadius: 10, padding: "9px 16px",
               fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer",
               letterSpacing: 0.5,
