@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Shield, User, Repeat2, X, SendHorizontal } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -33,7 +34,7 @@ const TEAMS = [
   // Group A
   { code: "MEX", name: "Mexico", flag: "🇲🇽" },
   { code: "RSA", name: "South Africa", flag: "🇿🇦" },
-  { code: "KOR", name: "South Korea", flag: "🇰🇷" },
+  { code: "KOR", name: "Korea Republic", flag: "🇰🇷" },
   { code: "CZE", name: "Czechia", flag: "🇨🇿" },
   // Group B
   { code: "CAN", name: "Canada", flag: "🇨🇦" },
@@ -134,8 +135,8 @@ function buildShareText(stickers) {
   TEAMS.forEach(t => {
     const rep = [], mis = [];
     stickers[t.code].forEach((s, i) => { if (s === 2) rep.push(i + 1); if (s === 0) mis.push(i + 1); });
-    if (rep.length) repeated.push(`${t.code}: ${rep.join(", ")}`);
-    if (mis.length) missing.push(`${t.code}: ${mis.join(", ")}`);
+    if (rep.length) repeated.push(`${t.flag} ${t.code}: ${rep.join(", ")}`);
+    if (mis.length) missing.push(`${t.flag} ${t.code}: ${mis.join(", ")}`);
   });
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
@@ -245,8 +246,8 @@ function StickerCard({ team, stickers, onClick }) {
   );
 }
 
-// ─── Number grid inside modal ─────────────────────────────────────────────────
-function NumberGrid({ stickers, onToggle, color }) {
+// ─── Team Modal ───────────────────────────────────────────────────────────────
+function TeamModal({ team, stickers, onToggle, onClose }) {
   const [poppingIdx, setPoppingIdx] = useState(null);
 
   function handleTap(idx) {
@@ -255,82 +256,98 @@ function NumberGrid({ stickers, onToggle, color }) {
     setTimeout(() => setPoppingIdx(null), 400);
   }
 
-  return (
-    <div style={{ padding: 14, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 7 }}>
-      {stickers.map((state, idx) => {
-        const n = idx + 1;
-        let bg, border, col, label;
-        if (state === 0) { bg = "rgba(255,255,255,0.07)"; border = "rgba(255,255,255,0.15)"; col = "rgba(255,255,255,0.35)"; label = null; }
-        else if (state === 1) { bg = "rgba(39,174,96,0.2)"; border = "#27ae60"; col = "#27ae60"; label = "✓"; }
-        else { bg = "rgba(245,166,35,0.2)"; border = "#f5a623"; col = "#f5a623"; label = "2×"; }
+  const collected = stickers.filter(s => s >= 1).length;
+  const dups = stickers.filter(s => s === 2).length;
 
-        return (
-          <button
-            key={n}
-            onClick={() => handleTap(idx)}
-            className={poppingIdx === idx ? "sticker-pop" : ""}
-            style={{
-              background: bg, border: `2px solid ${border}`,
-              borderRadius: 8, padding: "9px 4px", cursor: "pointer",
-              display: "flex", flexDirection: "column", alignItems: "center", gap: 2,
-            }}>
-            <span style={{ color: col, fontWeight: 800, fontSize: 15, fontFamily: "monospace" }}>{n}</span>
-            {label && <span style={{ fontSize: 8, color: col, fontWeight: 800 }}>{label}</span>}
-          </button>
-        );
-      })}
-    </div>
-  );
-}
-
-// ─── Team Modal ───────────────────────────────────────────────────────────────
-function TeamModal({ team, stickers, onToggle, onClose }) {
-  const modalColor = "#2d6e47";
   return (
     <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 100, padding: 16,
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 100,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: "#1e3a2a", borderRadius: 16, width: "100%", maxWidth: 380,
-        overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
       }}>
-        {/* Color header */}
-        <div style={{ background: "linear-gradient(135deg, #1a4a2e, #2d6e47)", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-            <span style={{ fontSize: 28 }}>{team.flag}</span>
+        {/* Header */}
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 36 }}>{team.flag}</span>
             <div>
-              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>{team.name}</div>
-              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>
-                {stickers.filter(s => s >= 1).length}/20 collected
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{team.name}</div>
+              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>
+                {collected}/20 collected
+                {dups > 0 && <span style={{ color: "#f5a623", marginLeft: 8 }}>🔁 {dups} dup{dups > 1 ? "s" : ""}</span>}
               </div>
             </div>
           </div>
           <button onClick={onClose} style={{
-            background: "rgba(255,255,255,0.25)", border: "none", color: "#fff",
-            borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16,
-          }}>✕</button>
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
+          }}>Close</button>
         </div>
 
         {/* Legend */}
-        <div style={{ display: "flex", gap: 14, padding: "10px 16px", borderBottom: "1px solid rgba(255,255,255,0.1)" }}>
+        <div style={{ display: "flex", gap: 14, padding: "0 16px 12px", flexShrink: 0 }}>
           {[
-            { bg: "#f0f0f0", border: "#ddd", label: "Missing" },
-            { bg: "#e8f8ee", border: "#27ae60", label: "Have" },
-            { bg: "#fff8e6", border: "#f5a623", label: "Duplicate" },
+            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.12)", label: "Missing" },
+            { bg: "rgba(39,174,96,0.25)", border: "#27ae60", label: "Have" },
+            { bg: "rgba(245,166,35,0.25)", border: "#f5a623", label: "Duplicate" },
           ].map(l => (
             <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
-              <div style={{ width: 14, height: 14, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
-              <span style={{ color: "rgba(255,255,255,0.45)", fontSize: 11 }}>{l.label}</span>
+              <div style={{ width: 12, height: 12, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
+              <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{l.label}</span>
             </div>
           ))}
         </div>
 
-        <NumberGrid stickers={stickers} onToggle={onToggle} color={modalColor} />
+        {/* Sticker grid — large cards */}
+        <div style={{ overflowY: "auto", padding: "0 12px 24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+            {stickers.map((state, idx) => {
+              const n = idx + 1;
+              let bg, border, textCol, badge;
+              if (state === 0) { bg = "rgba(255,255,255,0.05)"; border = "rgba(255,255,255,0.1)"; textCol = "rgba(255,255,255,0.25)"; badge = null; }
+              else if (state === 1) { bg = "rgba(39,174,96,0.15)"; border = "#27ae60"; textCol = "#27ae60"; badge = "x1"; }
+              else { bg = "rgba(245,166,35,0.15)"; border = "#f5a623"; textCol = "#f5a623"; badge = "x2"; }
 
-        <div style={{ color: "#aaa", fontSize: 11, textAlign: "center", padding: "0 16px 14px" }}>
-          Tap to cycle: missing → have → duplicate
+              return (
+                <button
+                  key={n}
+                  onClick={() => handleTap(idx)}
+                  className={poppingIdx === idx ? "sticker-pop" : ""}
+                  style={{
+                    background: bg, border: `2px solid ${border}`,
+                    borderRadius: 12, padding: "14px 8px 10px", cursor: "pointer",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                    position: "relative", minHeight: 90,
+                  }}>
+                  {/* Code label top-left */}
+                  <span style={{
+                    position: "absolute", top: 7, left: 8,
+                    color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8,
+                  }}>{team.code} {n}</span>
+
+                  {/* Player icon */}
+                  <div style={{ opacity: state === 0 ? 0.15 : 0.85, marginTop: 8, color: state === 0 ? "#fff" : textCol }}>
+                    {n === 1
+                      ? <Shield size={28} strokeWidth={1.5} />
+                      : <User size={28} strokeWidth={1.5} />
+                    }
+                  </div>
+
+                  {/* Badge */}
+                  {badge && (
+                    <div style={{
+                      background: border, color: state === 1 ? "#0a1f0f" : "#0a1f0f",
+                      borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
+                    }}>{badge}</div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -668,33 +685,29 @@ export default function App() {
               }}>🧧 {packs.reduce((s, p) => s + p.qty, 0)}</button>
           </div>
 
-          {/* Stats */}
-          <div style={{ display: "flex", gap: 6, marginBottom: 10 }}>
-            {[
-              { label: "Have", value: stats.have, color: "#27ae60" },
-              { label: "Dupes", value: stats.dup, color: "#f5a623" },
-              { label: "Missing", value: stats.miss, color: "#e8523a" },
-            ].map(s => (
-              <div key={s.label} style={{
-                flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 8,
-                padding: "6px 4px", textAlign: "center",
-              }}>
-                <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: s.color, fontSize: 18, lineHeight: 1 }}>{s.value}</div>
-                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 9, marginTop: 2, textTransform: "uppercase", letterSpacing: 0.5 }}>{s.label}</div>
+          {/* Dashboard cards */}
+          <div style={{ display: "flex", gap: 10 }}>
+            {/* Progress card */}
+            <div style={{ flex: 2, background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px" }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Collection</div>
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#fff", fontSize: 40, lineHeight: 1, marginBottom: 4 }}>{pct}%</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 10 }}>{stats.have + stats.dup} of {stats.total} stickers</div>
+              <div style={{ height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 4, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #27ae60, #f5c842)", borderRadius: 4, transition: "width 0.4s" }} />
               </div>
-            ))}
-          </div>
-
-          {/* Progress bar */}
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.1)", borderRadius: 6, overflow: "hidden" }}>
-              <div style={{
-                height: "100%", width: `${pct}%`,
-                background: "linear-gradient(90deg, #27ae60, #f5c842)",
-                borderRadius: 6, transition: "width 0.4s",
-              }} />
             </div>
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 12, minWidth: 80, textAlign: "right" }}>{pct}% completed</div>
+
+            {/* Swaps card */}
+            <button onClick={() => setView(view === "duplicates" ? "all" : "duplicates")} style={{
+              flex: 1, background: view === "duplicates" ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.06)",
+              borderRadius: 14, padding: "14px 12px", border: view === "duplicates" ? "1px solid #f5a623" : "1px solid transparent",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+              cursor: "pointer",
+            }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>Swaps</div>
+              <Repeat2 size={28} color="#f5a623" strokeWidth={1.5} />
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5a623", fontSize: 28, lineHeight: 1 }}>{stats.dup}</div>
+            </button>
           </div>
         </div>
       </div>
@@ -704,9 +717,9 @@ export default function App() {
         {/* Filter tabs */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[
-            { key: "all", label: "All" },
-            { key: "duplicates", label: "🔁 Duplicates" },
-            { key: "missing", label: "❌ Missing" },
+            { key: "all", label: "All", icon: null },
+            { key: "duplicates", label: "Duplicates", icon: <Repeat2 size={12} strokeWidth={2} /> },
+            { key: "missing", label: "Missing", icon: <X size={12} strokeWidth={2.5} /> },
           ].map(f => (
             <button key={f.key} onClick={() => setView(f.key)} style={{
               background: view === f.key ? "#f5c842" : "rgba(255,255,255,0.08)",
@@ -715,7 +728,10 @@ export default function App() {
               fontFamily: view === f.key ? "'Black Han Sans', sans-serif" : "'Inter', sans-serif",
               fontWeight: view === f.key ? 400 : 600,
               fontSize: 12, cursor: "pointer", letterSpacing: view === f.key ? 0.5 : 0,
-            }}>{f.label}</button>
+              display: "flex", alignItems: "center", gap: 5,
+            }}>
+              {f.icon}{f.label}
+            </button>
           ))}
         </div>
 
@@ -780,9 +796,9 @@ export default function App() {
         borderRadius: 50, padding: "14px 20px",
         fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer",
         boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
-        zIndex: 50,
+        zIndex: 50, display: "flex", alignItems: "center", gap: 8,
       }}>
-        📤 SHARE
+        <SendHorizontal size={16} strokeWidth={2} /> SHARE
       </button>
 
       {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
