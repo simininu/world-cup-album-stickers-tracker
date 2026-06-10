@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Repeat2, X, SendHorizontal } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -93,6 +93,56 @@ const TEAMS = [
   { code: "PAN", name: "Panama", flag: "🇵🇦" },
 ];
 
+const PLAYERS = {
+  "MEX": ["Team Logo","Luis Malagón","Johan Vasquez","Jorge Sánchez","Cesar Montes","Jesus Gallardo","Israel Reyes","Diego Lainez","Carlos Rodriguez","Edson Alvarez","Orbelin Pineda","Marcel Ruiz","Team Photo","Érick Sánchez","Hirving Lozano","Santiago Giménez","Raúl Jiménez","Alexis Vega","Roberto Alvarado","Cesar Huerta"],
+  "RSA": ["Team Logo","Ronwen Williams","Sipho Chaine","Aubrey Modiba","Samukele Kabini","Mbekezeli Mbokazi","Khulumani Ndamane","Siyabonga Ngezana","Khuliso Mudau","Nkosinathi Sibisi","Teboho Mokoena","Thalente Mbatha","Team Photo","Bathasi Aubaas","Yaya Sithole","Sipho Mbule","Lyle Foster","Iqraam Rayners","Mohau Nkota","Oswin Appollis"],
+  "KOR": ["Team Logo","Hyeon-woo Jo","Seung-Gyu Kim","Min-jae Kim","Yu-min Cho","Young-woo Seol","Han-beom Lee","Tae-seok Lee","Myung-jae Lee","Jae-sung Lee","In-beom Hwang","Kang-in Lee","Team Photo","Seung-ho Paik","Jens Castrop","Dongg-yeong Lee","Gue-sung Cho","Heung-min Son","Hee-chan Hwang","Hyeon-Gyu Oh"],
+  "CZE": ["Team Logo","Matej Kovar","Jindrich Stanek","Ladislav Krejci","Vladimir Coufal","Jaroslav Zeleny","Tomas Holes","David Zima","Michal Sadilek","Lukas Provod","Lukas Cerv","Tomas Soucek","Team Photo","Pavel Sulc","Matej Vydra","Vasil Kusej","Tomas Chory","Vaclav Cerny","Adam Hlozek","Patrik Schick"],
+  "CAN": ["Team Logo","Dayne St.Clair","Alphonso Davies","Alistair Johnston","Samuel Adekugbe","Riche Larvea","Derek Cornelius","Moïse Bombito","Kamal Miller","Stephen Eustáquio","Ismaël Koné","Jonathan Osorio","Team Photo","Jacob Shaffelburg","Mathieu Choinière","Niko Sigur","Tajon Buchanan","Liam Millar","Cyle Larin","Jonathan David"],
+  "BIH": ["Team Logo","Nikola Vasilj","Amer Dedic","Sead Kolasinac","Tarik Muharemovic","Nihad Mujakic","Nikola Katic","Amir Hadziahmetovic","Benjamin Tahirovic","Armin Gigovic","Ivan Sunjic","Ivan Basic","Team Photo","Dzenis Burnic","Esmir Bajraktarevic","Amar Memic","Ermedin Demirovic","Edin Dzeko","Samed Bazdar","Haris Tabakovic"],
+  "QAT": ["Team Logo","Meshaal Barsham","Sultan Albrake","Lucas Mendes","Homam Ahmed","Boualem Khoukhi","Pedro Miguel","Tarek Salman","Mohamed Al-Mannai","Karim Boudiaf","Assim Madibo","Ahmed Fatehi","Team Photo","Mohammed Waad","Abdulaziz Hatem","Hassan Al-Haydos","Edmilson Junior","Akram Hassan Afif","Ahmed Al Ganehi","Almoez Ali"],
+  "SUI": ["Team Logo","Gregor Kobel","Yvon Mvogo","Manuel Akanji","Ricardo Rodriguez","Nico Elvedi","Aurèle Amenda","Silvan Widmer","Granit Xhaka","Denis Zakaria","Remo Freuler","Fabian Rieder","Team Photo","Ardon Jashari","Johan Manzambi","Michel Aebischer","Breel Embolo","Ruben Vargas","Dan Ndoye","Zeki Amdouni"],
+  "BRA": ["Team Logo","Alisson","Bento","Marquinhos","Éder Militão","Gabriel Magalhães","Danilo","Wesley","Lucas Paquetá","Casemiro","Bruno Guimarães","Luiz Henrique","Team Photo","Vinicius Júnior","Rodrygo","João Pedro","Matheus Cunha","Gabriel Martinelli","Raphinha","Estévão"],
+  "MAR": ["Team Logo","Yassine Bounou","Munir El Kajoui","Achraf Hakimi","Noussair Mazraoui","Nayef Aguerd","Roman Saiss","Jawad El Yamio","Adam Masina","Sofyan Amrabat","Azzedine Ounahi","Eliesse Ben Seghir","Team Photo","Bilal El Khannouss","Ismael Saibari","Youssef En-Nesyri","Abde Ezzalzouli","Soufiane Rahimi","Brahim Diaz","Ayoub El Kaabi"],
+  "HAI": ["Team Logo","Johny Placide","Carlens Arcus","Martin Expérience","Jean-Kevin Duverne","Ricardo Adé","Duke Lacroix","Garven Metusala","Hannes Delcroix","Leverton Pierre","Danley Jean Jacques","Jean-Ricner Bellegarde","Team Photo","Christopher Attys","Derrick Etienne Jr","Josue Casimir","Ruben Providence","Duckens Nazon","Louicius Deedson","Frantzdy Pierrot"],
+  "SCO": ["Team Logo","Angus Gunn","Jack Hendry","Kieran Tierney","Aaron Hickey","Andrew Robertson","Scott McKenna","John Souttar","Anthony Ralston","Grant Hanley","Scott McTominay","Billy Gilmour","Team Photo","Lewis Ferguson","Ryan Christie","Kenny McLean","John McGinn","Lyndon Dykes","Che Adams","Ben Gannon-Doak"],
+  "USA": ["Team Logo","Math Freese","Chris Richards","Tim Ream","Mark McKenzie","Alex Freeman","Antonee Robinson","Tyler Adams","Tanner Tessmann","Weston McKennie","Christian Roldan","Timothy Weah","Team Photo","Diego Luna","Malik Tillman","Christian Pulisic","Brenden Aaronson","Ricardo Pepi","Haji Wright","Folarin Balogun"],
+  "PAR": ["Team Logo","Roberto Fernandez","Orlando Gill","Gustavo Gomez","Fabián Balbuena","Juan José Cáceres","Omar Alderete","Junior Alonso","Mathías Villasanti","Diego Gomez","Damián Bobadilla","Andres Cubas","Team Photo","Matias Galarza Fonda","Julio Enciso","Alejandro Romero Gamarra","Miguel Almirón","Ramon Sosa","Angel Romero","Antonio Sanabria"],
+  "AUS": ["Team Logo","Mathew Ryan","Joe Gauci","Harry Souttar","Alessandro Circati","Jordan Bos","Aziz Behich","Cameron Burgess","Lewis Miller","Milos Degenek","Jackson Irvine","Riley McGree","Team Photo","Aiden O'Neill","Connor Metcalfe","Patrick Yazbek","Craig Goodwin","Kusini Vengi","Nestory Irankunda","Mohamed Touré"],
+  "TUR": ["Team Logo","Ugurcan Cakir","Mert Muldur","Zeki Celik","Abdulkerim Bardakci","Caglar Soyuncu","Merih Demiral","Ferdi Kadioglu","Kaan Ayhan","Ismail Yuksek","Hakan Calhanoglu","Orkun Kokcu","Team Photo","Arda Guler","Irfan Can Kahveci","Yunus Akgun","Can Uzun","Baris Alper Yilmaz","Kerem Akturkoglu","Kenan Yildiz"],
+  "GER": ["Team Logo","Marc-André ter Stegen","Jonathan Tah","David Raum","Nico Schlotterbeck","Antonio Rüdiger","Waldemar Anton","Ridle Baku","Maximilian Mittelstadt","Joshua Kimmich","Florian Wirtz","Felix Nmecha","Team Photo","Leon Goretzka","Jamal Musiala","Serge Gnabry","Kai Havertz","Leroy Sane","Karim Adeyemi","Nick Woltemade"],
+  "CUW": ["Team Logo","Eloy Room","Armando Obispo","Sherel Floranus","Jurien Gaari","Joshua Brenet","Roshon Van Eijma","Shurandy Sambo","Livano Comenencia","Godfried Roemeratoe","Juninho Bacuna","Leandro Bacuna","Team Photo","Tahith Chong","Kenji Gorre","Jearl Margaritha","Jurgen Locadia","Jeremy Antonisse","Gervane Kastaneer","Sontje Hansen"],
+  "CIV": ["Team Logo","Yahia Fofana","Ghislain Konan","Wilfried Singo","Odilon Kossounou","Evan Ndicka","Willy Boly","Emmanuel Agbadou","Ousmane Diomande","Franck Kessie","Seko Fofana","Ibrahim Sangare","Team Photo","Jean-Philippe Gbamin","Amad Diallo","Sébastien Haller","Simon Adingra","Yan Diomande","Evann Guessand","Oumar Diakite"],
+  "ECU": ["Team Logo","Hernán Galíndez","Gonzalo Valle","Piero Hincapié","Pervis Estupiñán","Willian Pacho","Ángelo Preciado","Joel Ordóñez","Moises Caicedo","Alan Franco","Kendry Paez","Pedro Vite","Team Photo","John Veboah","Leonardo Campana","Gonzalo Plata","Nilson Angulo","Alan Minda","Kevin Rodriguez","Enner Valencia"],
+  "NED": ["Team Logo","Bart Verbruggen","Virgil van Dijk","Micky van de Ven","Jurrien Timber","Denzel Dumfries","Nathan Aké","Jeremie Frimpong","Jan Paul van Hecke","Tijjani Reijnders","Ryan Gravenberch","Teun Koopmeiners","Team Photo","Frenkie de Jong","Xavi Simons","Justin Kluivert","Memphis Depay","Donyell Malen","Wout Weghorst","Cody Gakpo"],
+  "JPN": ["Team Logo","Zion Suzuki","Henry Heroki Mochizuki","Ayumu Seko","Junnosuke Suzuki","Shogo Taniguchi","Tsuyoshi Watanabe","Kaishu Sano","Yuki Soma","Ao Tanaka","Daichi Kamada","Takefusa Kubo","Team Photo","Ritsu Doan","Keito Nakamura","Takumi Minamino","Shuto Machino","Junya Ito","Koki Ogawa","Ayase Ueda"],
+  "SWE": ["Team Logo","Victor Johansson","Isak Hien","Gabriel Gudmundsson","Emil Holm","Victor Nilsson Lindelöf","Gustaf Lagerbielke","Lucas Bergvall","Hugo Larsson","Jesper Karlström","Yasin Ayari","Mattias Svanberg","Team Photo","Daniel Svensson","Ken Sema","Roony Bardghji","Dejan Kulusevski","Anthony Elanga","Alexander Isak","Viktor Gyökeres"],
+  "TUN": ["Team Logo","Bechir Ben Said","Aymen Dahmen","Yan Valery","Montassar Talbi","Yassine Meriah","Ali Abdi","Dylan Bronn","Ellyes Skhiri","Aissa Laidouni","Ferjani Sassi","Mohamed Ali Ben Romdhane","Team Photo","Hannibal Mejbri","Elias Achouri","Elias Saad","Hazem Mastouri","Ismael Gharbi","Sayfallah Ltaief","Naim Sliti"],
+  "BEL": ["Team Logo","Thibaut Courtois","Arthur Theate","Timothy Castagne","Zeno Debast","Brandon Mechele","Maxim De Cuyper","Thomas Meunier","Youri Tielemans","Amadou Onana","Nicolas Raskin","Alexis Saelemaekers","Team Photo","Hans Vanaken","Kevin De Bruyne","Jérémy Doku","Charles De Ketelaere","Leandro Trossard","Loïs Openda","Romelu Lukaku"],
+  "EGY": ["Team Logo","Mohamed El Shenawy","Mohamed Hany","Mohamed Hamdy","Yasser Ibrahim","Khaled Sobhi","Ramy Rabia","Hossam Abdelmaguid","Ahmed Fatouh","Marwan Attia","Zizo","Hamdy Fathy","Team Photo","Mohamed Lasheen","Emam Ashour","Osama Faisal","Mohamed Salah","Mostafa Mohamed","Trezeguet","Omar Marmoush"],
+  "IRN": ["Team Logo","Alireza Beiranvand","Morteza Pouraliganji","Ehsan Hajsafi","Milad Mohammadi","Shojae Khalilzadeh","Ramin Rezaeian","Hossein Kanaani","Sadegh Moharrami","Saleh Hardani","Saeed Ezatolahi","Saman Ghoddos","Team Photo","Omid Noorafkan","Roozbeh Cheshmi","Mohammad Mohebi","Sardar Azmoun","Mehdi Taremi","Alireza Jahanbakhsh","Ali Gholizadeh"],
+  "NZL": ["Team Logo","Max Crocombe Payne","Alex Paulsen","Michael Boxall","Liberato Cacace","Tim Payne","Tyler Bindon","Francis de Vries","Finn Surman","Joe Bell","Sarpreet Singh","Ryan Thomas","Team Photo","Matthew Garbett","Marko Stamenić","Ben Old","Chris Wood","Elijah Just","Callum McCowatt","Kosta Barbarouses"],
+  "ESP": ["Team Logo","Unai Simon","Robin Le Normand","Aymeric Laporte","Dean Huijsen","Pedro Porro","Dani Carvajal","Marc Cucurella","Martín Zubimendi","Rodri","Pedri","Fabian Ruiz","Team Photo","Mikel Merino","Lamine Yamal","Dani Olmo","Nico Williams","Ferran Torres","Álvaro Morata","Mikel Oyarzabal"],
+  "CPV": ["Team Logo","Vozinha","Logan Costa","Pico","Diney","Steven Moreira","Wagner Pina","Joao Paulo","Yannick Semedo","Kevin Pina","Patrick Andrade","Jamiro Monteiro","Team Photo","Deroy Duarte","Garry Rodrigues","Jovane Cabral","Ryan Mendes","Dailon Livramento","Willy Semedo","Bebe"],
+  "KSA": ["Team Logo","Nawaf Alaqidi","Abdulrahman Al-Sanbi","Saud Abdulhamid","Nawaf Bouwashl","Jihad Thakri","Moteb Al-Harbi","Hassan Altambakti","Musab Aljuwayr","Ziyad Aljohani","Abdullah Alkhaibari","Nasser Aldawsari","Team Photo","Saleh Abu Alshamat","Marwan Alsahafi","Salem Aldawsari","Abdulrahman Al-Aboud","Feras Akbrikan","Saleh Alshehri","Abdullah Al-Hamdan"],
+  "URU": ["Team Logo","Sergio Rochet","Santiago Mele","Ronald Araujo","José María Giménez","Sebastian Caceres","Mathias Olivera","Guillermo Varela","Nahitan Nandez","Federico Valverde","Giorgian De Arrascaeta","Rodrigo Bentancur","Team Photo","Manuel Ugarte","Nicolás de la Cruz","Maxi Araujo","Darwin Núñez","Federico Viñas","Rodrigo Aguirre","Facundo Pellistri"],
+  "FRA": ["Team Logo","Mike Maignan","Theo Hernandez","William Saliba","Jules Kounde","Ibrahima Konate","Dayot Upamecano","Lucas Digne","Aurélien Tchouaméni","Eduardo Camavinga","Manu Kone","Adrien Rabiot","Team Photo","Michael Olise","Ousmane Dembele","Bradley Barcola","Désiré Doué","Kingsley Coman","Hugo Ekitike","Kylian Mbappe"],
+  "SEN": ["Team Logo","Edouard Mendy","Yehvann Diouf","Moussa Niakhaté","Abdoulaye Seck","Ismail Jakobs","El Hadji Malick Diouf","Kalidou Koulibaly","Idrissa Gana Gueye","Pape Matar Sarr","Pape Gueye","Habib Diarra","Team Photo","Lamine Camara","Sadio Mane","Ismaïla Sarr","Boulaye Dia","Iliman Ndiaye","Nicolas Jackson","Krepin Diatta"],
+  "IRQ": ["Team Logo","Jalal Hassan","Rebin Sulaka","Hussein Ali","Akam Hashem","Merchas Doski","Zaid Tahseen","Manaf Younis","Zidane Iqbal","Amir Al-Ammari","Ibrahim Bavesh","Ali Jasim","Team Photo","Youssef Amyn","Aimar Sher","Marko Farji","Osama Rashid","Ali Al-Hamadi","Aymen Hussein","Mohanad Ali"],
+  "NOR": ["Team Logo","Orjan Nyland","Julian Ryerson","Leo Ostigård","Kristoffer Vassbakk Ajer","Marcus Holmgren Pedersen","David Møller Wolfe","Torbjørn Heggem","Morten Thorsby","Martin Ødegaard","Sander Berge","Andreas Schjelderup","Team Photo","Patrick Berg","Erling Haaland","Alexander Sørloth","Aron Dønnum","Jorgen Strand Larsen","Antonio Nusa","Oscar Bobb"],
+  "ARG": ["Team Logo","Emiliano Martinez","Nahuel Molina","Cristian Romero","Nicolas Otamendi","Nicolas Tagliafico","Leonardo Balerdi","Enzo Fernandez","Alexis Mac Allister","Rodrigo De Paul","Exequiel Palacios","Leandro Paredes","Team Photo","Nico Paz","Franco Mastantuono","Nico Gonzalez","Lionel Messi","Lautaro Martinez","Julian Alvarez","Giuliano Simeone"],
+  "ALG": ["Team Logo","Alexis Guendouz","Ramy Bensebaini","Youcef Atal","Rayan Aït-Nouri","Mohamed Amine Tougai","Aïssa Mandi","Ismael Bennacer","Houssem Aquar","Hicham Boudaoui","Ramiz Zerrouki","Nabil Bentalab","Team Photo","Farés Chaibi","Riyad Mahrez","Said Benrahma","Anis Hadj Moussa","Amine Gouiri","Baghdad Bounedjah","Mohammed Amoura"],
+  "AUT": ["Team Logo","Alexander Schlager","Patrick Pentz","David Alaba","Kevin Danso","Philipp Lienhart","Stefan Posch","Phillipp Mwene","Alexander Prass","Xaver Schlager","Marcel Sabitzer","Konrad Laimer","Team Photo","Florian Grillitsch","Nicolas Seiwald","Romano Schmid","Patrick Wimmer","Christoph Baumgartner","Michael Gregoritsch","Marko Arnautović"],
+  "JOR": ["Team Logo","Yazeed Abulaila","Ihsan Haddad","Mohammad Abu Hashish","Yazan Al-Arab","Abdallah Nasib","Saleem Obaid","Mohammad Abualnadi","Ibrahim Saadeh","Nizar Al-Rashdan","Noor Al-Rawabdeh","Mohannad Abu Taha","Team Photo","Amer Jamous","Musa Al-Taamari","Yazan Al-Naimat","Mahmoud Al-Mardi","Ali Olwan","Mohammad Abu Zrayq","Ibrahim Sabra"],
+  "POR": ["Team Logo","Diogo Costa","Jose Sa","Ruben Dias","João Cancelo","Diogo Dalot","Nuno Mendes","Gonçalo Inácio","Bernardo Silva","Bruno Fernandes","Ruben Neves","Vitinha","Team Photo","João Neves","Cristiano Ronaldo","Francisco Trincao","João Felix","Gonçalo Ramos","Pedro Neto","Rafael Leão"],
+  "COD": ["Team Logo","Lionel Mpasi","Aaron Wan-Bissaka","Axel Tuanzebe","Arthur Masuaku","Chancel Mbemba","Ngal'ayel Mukau","Samuel Moutoussamy","Noah Sadiki","Théo Bongonda","Yoane Wissa","Cédric Bakambu","Team Photo","Donatien Masuaku","Meschack Elia","Silas Katompa Mvumpa","Cédric Itten","Gael Kakuta","Jonathan David","Wissa"],
+  "UZB": ["Team Logo","Utkir Yusupov","Abdukodir Khusanov","Farrukh Sayfiev","Dostonbek Khamdamov","Eldor Shomurodov","Jaloliddin Masharipov","Otabek Shukurov","Azizbek Turgunboev","Islom Tukhtahujaev","Jasurbek Yakhshiboev","Akbar Turgunboev","Team Photo","Muzaffar Muminov","Khojiakbar Alijonov","Otabek Turgunboev","Jamshid Iskanderov","Husan Kholmatov","Bunyod Abdullayev","Odil Ahmedov"],
+  "COL": ["Team Logo","Camilo Vargas","David Ospina","Santiago Arias","Jhon Lucumi","Davinson Sanchez","Daniel Munoz","Yerry Mina","Carlos Cuesta","Richard Rios","Jefferson Lerma","Wilmar Barrios","Team Photo","Juan Cuadrado","James Rodriguez","Luis Diaz","Jhon Cordoba","Rafael Santos Borre","Falcao","Jhon Duran"],
+  "ENG": ["Team Logo","Jordan Pickford","John Stones","Marc Guehi","Ezri Konsa","Trent Alexander-Arnold","Reece James","Dan Burn","Jordan Henderson","Declan Rice","Jude Bellingham","Cole Palmer","Team Photo","Morgan Rogers","Anthony Gordon","Phil Foden","Bukayo Saka","Harry Kane","Marcus Rashford","Ollie Watkins"],
+  "CRO": ["Team Logo","Dominik Livaković","Duje Ćaleta-Car","Joško Gvardiol","Josip Stanišić","Luka Vušković","Josip Šutalo","Kristijan Jakić","Luka Modrić","Mateo Kovačić","Martin Baturina","Lovro Majer","Team Photo","Mario Pašalić","Petar Sučić","Ivan Perišić","Marco Pašalić","Ante Budimir","Andrej Kramarić","Franjo Ivanović"],
+  "GHA": ["Team Logo","Richard Ofori","Abdul Manaf Nurudeen","Daniel Amartey","Alexander Djiku","Tariq Lamptey","Abdul Rahman Baba","Gideon Mensah","Alidu Seidu","Thomas Partey","Salis Abdul Samed","Mohammed Kudus","Team Photo","Antoine Semenyo","Ernest Nuamah","Kamaldeen Sulemana","Issahaku Abdul Fatawu","Inaki Williams","Jordan Ayew","Andre Ayew"],
+  "PAN": ["Team Logo","Luis Mejia","Orlando Mosquera","Eric Davis","Fidel Escobar","Michael Murillo","Andres Andrade","Jose Cordoba","Cesar Blackman","Adalberto Carrasquilla","Aníbal Godoy","Edgar Barcenas","Team Photo","Ismael Díaz","José Luiz Rodriguez","Alberto Quintero","Cerdigo Waterman","Edgardo Fariña","Rolando Blackburn","Jose Fajardo"],
+};
 const TEAM_TOTAL = 20;
 const STORAGE_KEY = "copa2026_stickers_v3";
 
@@ -304,7 +354,7 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
 
         {/* Sticker grid — large cards */}
         <div style={{ overflowY: "auto", padding: "0 12px 24px" }}>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
             {stickers.map((state, idx) => {
               const n = idx + 1;
               let bg, border, textCol, badge;
@@ -319,9 +369,9 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
                   className={poppingIdx === idx ? "sticker-pop" : ""}
                   style={{
                     background: bg, border: `2px solid ${border}`,
-                    borderRadius: 12, padding: "14px 8px 10px", cursor: "pointer",
-                    display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
-                    position: "relative", minHeight: 90,
+                    borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                    position: "relative", minHeight: 110,
                   }}>
                   {/* Code label top-left */}
                   <span style={{
@@ -330,17 +380,28 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
                   }}>{team.code} {n}</span>
 
                   {/* Player icon */}
-                  <div style={{ opacity: state === 0 ? 0.15 : 0.85, marginTop: 8, color: state === 0 ? "#fff" : textCol }}>
+                  <div style={{ opacity: state === 0 ? 0.15 : 0.85, marginTop: 18, color: state === 0 ? "#fff" : textCol }}>
                     {n === 1
-                      ? <Shield size={28} strokeWidth={1.5} />
-                      : <User size={28} strokeWidth={1.5} />
+                      ? <Shield size={30} strokeWidth={1.5} />
+                      : n === 13
+                      ? <Users size={30} strokeWidth={1.5} />
+                      : <User size={30} strokeWidth={1.5} />
                     }
                   </div>
+
+                  {/* Player name */}
+                  <span style={{
+                    color: state === 0 ? "rgba(255,255,255,0.3)" : textCol,
+                    fontSize: 11, textAlign: "center", lineHeight: 1.3,
+                    padding: "0 2px", wordBreak: "break-word",
+                  }}>
+                    {(PLAYERS[team.code] && PLAYERS[team.code][idx]) || ""}
+                  </span>
 
                   {/* Badge */}
                   {badge && (
                     <div style={{
-                      background: border, color: state === 1 ? "#0a1f0f" : "#0a1f0f",
+                      background: border, color: "#0a1f0f",
                       borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
                     }}>{badge}</div>
                   )}
@@ -348,6 +409,103 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
               );
             })}
           </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Collection Modal ────────────────────────────────────────────────────────
+function CollectionModal({ stickers, onClose }) {
+  const teamsWithStickers = TEAMS.filter(t => t.stickers
+    ? false
+    : stickers[t.code].some(s => s >= 1)
+  );
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 100,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 22 }}>My Collection <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>({Object.values(stickers).flat().filter(s => s >= 1).length})</span></div>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
+          }}>Close</button>
+        </div>
+
+        {/* Scrollable list */}
+        <div style={{ overflowY: "auto", padding: "0 14px 24px" }}>
+          {teamsWithStickers.length === 0 ? (
+            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "40px 0", fontSize: 14 }}>
+              No stickers collected yet
+            </div>
+          ) : teamsWithStickers.map(team => {
+            const collected = stickers[team.code]
+              .map((s, i) => ({ s, i }))
+              .filter(({ s }) => s >= 1);
+
+            return (
+              <div key={team.code} style={{ marginBottom: 20 }}>
+                {/* Team header */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>{team.flag}</span>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{team.name}</span>
+                  </div>
+                  <span style={{
+                    background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)",
+                    borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600,
+                  }}>{collected.length} sticker{collected.length !== 1 ? "s" : ""}</span>
+                </div>
+
+                {/* Sticker cards */}
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {collected.map(({ s, i }) => {
+                    const n = i + 1;
+                    const isDup = s === 2;
+                    const bg = isDup ? "rgba(245,166,35,0.15)" : "rgba(39,174,96,0.15)";
+                    const border = isDup ? "#f5a623" : "#27ae60";
+                    const textCol = isDup ? "#f5a623" : "#27ae60";
+                    return (
+                      <div key={n} style={{
+                        background: bg, border: `2px solid ${border}`,
+                        borderRadius: 12, padding: "14px 8px 10px",
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 6,
+                        position: "relative", minHeight: 90,
+                      }}>
+                        <span style={{
+                          position: "absolute", top: 7, left: 8,
+                          color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8,
+                        }}>{team.code} {n}</span>
+                        <div style={{ opacity: 0.85, marginTop: 8, color: textCol }}>
+                          {n === 1 ? <Shield size={22} strokeWidth={1.5} /> : n === 13 ? <Users size={22} strokeWidth={1.5} /> : <User size={22} strokeWidth={1.5} />}
+                        </div>
+                        <span style={{
+                          color: textCol, fontSize: 11, textAlign: "center",
+                          lineHeight: 1.2, padding: "0 4px", wordBreak: "break-word",
+                        }}>
+                          {(PLAYERS[team.code] && PLAYERS[team.code][i]) || ""}
+                        </span>
+                        <div style={{
+                          background: border, color: "#0a1f0f",
+                          borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
+                        }}>{isDup ? "x2" : "x1"}</div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
@@ -586,6 +744,7 @@ export default function App() {
   const [splashFading, setSplashFading] = useState(false);
   const [activeTeam, setActiveTeam] = useState(null);
   const [showSpecial, setShowSpecial] = useState(false);
+  const [showCollection, setShowCollection] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showPacks, setShowPacks] = useState(false);
   const [view, setView] = useState("all");
@@ -652,7 +811,7 @@ export default function App() {
             <div style={{
               fontFamily: "'Black Han Sans', sans-serif",
               color: "#fff", fontSize: 52,
-              letterSpacing: 4, lineHeight: 1, marginBottom: 20,
+              letterSpacing: 4, lineHeight: 1, marginBottom: 8,
             }}>2026</div>
             <div style={{
               color: "rgba(255,255,255,0.35)", fontSize: 12,
@@ -661,14 +820,14 @@ export default function App() {
           </div>
           <div style={{
             position: "absolute", bottom: 40,
-            color: "rgba(255,255,255,0.2)", fontSize: 11, letterSpacing: 1,
-          }}>🇺🇸 🇲🇽 🇨🇦</div>
+            fontSize: 22, letterSpacing: 6,
+          }}>🇲🇽 🇺🇸 🇨🇦</div>
         </div>
       )}
 
       {/* Header */}
       <div style={{
-        background: "linear-gradient(160deg, #0a1f0f 0%, #0f3020 100%)",
+        background: "#0a1f0f",
         padding: "16px 16px 20px",
         position: "sticky", top: 0, zIndex: 10,
       }}>
@@ -688,16 +847,15 @@ export default function App() {
           {/* Dashboard cards */}
           <div style={{ display: "flex", gap: 10 }}>
             {/* Progress card */}
-            <div style={{ flex: 2, background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px" }}>
+            <button onClick={() => setShowCollection(true)} style={{ flex: 2, background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px", border: "none", textAlign: "left", cursor: "pointer" }}>
               <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Collection</div>
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#fff", fontSize: 40, lineHeight: 1, marginBottom: 4 }}>{pct}%</div>
               <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 10 }}>{stats.have + stats.dup} of {stats.total} stickers</div>
               <div style={{ height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 4, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #27ae60, #f5c842)", borderRadius: 4, transition: "width 0.4s" }} />
               </div>
-            </div>
-
-            {/* Swaps card */}
+              <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 6 }}>{stats.miss} missing</div>
+            </button>
             <button onClick={() => setView(view === "duplicates" ? "all" : "duplicates")} style={{
               flex: 1, background: view === "duplicates" ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.06)",
               borderRadius: 14, padding: "14px 12px", border: view === "duplicates" ? "1px solid #f5a623" : "1px solid transparent",
@@ -743,7 +901,7 @@ export default function App() {
             marginBottom: 16, padding: 0,
             boxShadow: specialDup > 0 ? "0 4px 16px rgba(245,166,35,0.4)" : "0 2px 10px rgba(0,0,0,0.3)",
           }}>
-            <div style={{ background: "linear-gradient(135deg, #1a1a2e, #16213e)", height: 7 }} />
+            <div style={{ background: "#2d6e47", height: 7 }} />
             <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 24 }}>✨</span>
@@ -802,6 +960,7 @@ export default function App() {
       </button>
 
       {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
+      {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} />}
       {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
       {activeTeam && currentTeam && (
         <TeamModal team={currentTeam} stickers={stickers[activeTeam]} onToggle={(idx) => toggleSticker(activeTeam, idx)} onClose={() => setActiveTeam(null)} />
