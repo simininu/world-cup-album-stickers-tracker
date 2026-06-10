@@ -1,70 +1,85 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 
 const TEAMS = [
-  { code: "MEX", name: "México", flag: "🇲🇽" },
-  { code: "RSA", name: "África do Sul", flag: "🇿🇦" },
-  { code: "USA", name: "Estados Unidos", flag: "🇺🇸" },
-  { code: "CAN", name: "Canadá", flag: "🇨🇦" },
+  { code: "MEX", name: "Mexico", flag: "🇲🇽" },
+  { code: "RSA", name: "South Africa", flag: "🇿🇦" },
+  { code: "USA", name: "United States", flag: "🇺🇸" },
+  { code: "CAN", name: "Canada", flag: "🇨🇦" },
   { code: "ARG", name: "Argentina", flag: "🇦🇷" },
-  { code: "BOL", name: "Bolívia", flag: "🇧🇴" },
-  { code: "BRA", name: "Brasil", flag: "🇧🇷" },
+  { code: "BOL", name: "Bolivia", flag: "🇧🇴" },
+  { code: "BRA", name: "Brazil", flag: "🇧🇷" },
   { code: "CHI", name: "Chile", flag: "🇨🇱" },
-  { code: "COL", name: "Colômbia", flag: "🇨🇴" },
-  { code: "ECU", name: "Equador", flag: "🇪🇨" },
-  { code: "PAR", name: "Paraguai", flag: "🇵🇾" },
+  { code: "COL", name: "Colombia", flag: "🇨🇴" },
+  { code: "ECU", name: "Ecuador", flag: "🇪🇨" },
+  { code: "PAR", name: "Paraguay", flag: "🇵🇾" },
   { code: "PER", name: "Peru", flag: "🇵🇪" },
-  { code: "URU", name: "Uruguai", flag: "🇺🇾" },
+  { code: "URU", name: "Uruguay", flag: "🇺🇾" },
   { code: "VEN", name: "Venezuela", flag: "🇻🇪" },
   { code: "CRC", name: "Costa Rica", flag: "🇨🇷" },
   { code: "HON", name: "Honduras", flag: "🇭🇳" },
   { code: "JAM", name: "Jamaica", flag: "🇯🇲" },
-  { code: "PAN", name: "Panamá", flag: "🇵🇦" },
-  { code: "AUS", name: "Austrália", flag: "🇦🇺" },
+  { code: "PAN", name: "Panama", flag: "🇵🇦" },
+  { code: "AUS", name: "Australia", flag: "🇦🇺" },
   { code: "CHN", name: "China", flag: "🇨🇳" },
-  { code: "JPN", name: "Japão", flag: "🇯🇵" },
-  { code: "KOR", name: "Coreia do Sul", flag: "🇰🇷" },
-  { code: "NZL", name: "Nova Zelândia", flag: "🇳🇿" },
-  { code: "THA", name: "Tailândia", flag: "🇹🇭" },
-  { code: "IRN", name: "Irã", flag: "🇮🇷" },
-  { code: "JOR", name: "Jordânia", flag: "🇯🇴" },
-  { code: "KSA", name: "Arábia Saudita", flag: "🇸🇦" },
-  { code: "UZB", name: "Uzbequistão", flag: "🇺🇿" },
-  { code: "CMR", name: "Camarões", flag: "🇨🇲" },
-  { code: "COD", name: "R.D. Congo", flag: "🇨🇩" },
-  { code: "EGY", name: "Egito", flag: "🇪🇬" },
-  { code: "MAR", name: "Marrocos", flag: "🇲🇦" },
-  { code: "NGA", name: "Nigéria", flag: "🇳🇬" },
+  { code: "JPN", name: "Japan", flag: "🇯🇵" },
+  { code: "KOR", name: "South Korea", flag: "🇰🇷" },
+  { code: "NZL", name: "New Zealand", flag: "🇳🇿" },
+  { code: "THA", name: "Thailand", flag: "🇹🇭" },
+  { code: "IRN", name: "Iran", flag: "🇮🇷" },
+  { code: "JOR", name: "Jordan", flag: "🇯🇴" },
+  { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "UZB", name: "Uzbekistan", flag: "🇺🇿" },
+  { code: "CMR", name: "Cameroon", flag: "🇨🇲" },
+  { code: "COD", name: "DR Congo", flag: "🇨🇩" },
+  { code: "EGY", name: "Egypt", flag: "🇪🇬" },
+  { code: "MAR", name: "Morocco", flag: "🇲🇦" },
+  { code: "NGA", name: "Nigeria", flag: "🇳🇬" },
   { code: "SEN", name: "Senegal", flag: "🇸🇳" },
-  { code: "TZA", name: "Tanzânia", flag: "🇹🇿" },
-  { code: "BEL", name: "Bélgica", flag: "🇧🇪" },
-  { code: "CRO", name: "Croácia", flag: "🇭🇷" },
-  { code: "DEN", name: "Dinamarca", flag: "🇩🇰" },
-  { code: "ENG", name: "Inglaterra", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { code: "FRA", name: "França", flag: "🇫🇷" },
-  { code: "GER", name: "Alemanha", flag: "🇩🇪" },
-  { code: "HUN", name: "Hungria", flag: "🇭🇺" },
-  { code: "IRL", name: "Irlanda", flag: "🇮🇪" },
-  { code: "ITA", name: "Itália", flag: "🇮🇹" },
-  { code: "NED", name: "Holanda", flag: "🇳🇱" },
-  { code: "POL", name: "Polônia", flag: "🇵🇱" },
+  { code: "TZA", name: "Tanzania", flag: "🇹🇿" },
+  { code: "BEL", name: "Belgium", flag: "🇧🇪" },
+  { code: "CRO", name: "Croatia", flag: "🇭🇷" },
+  { code: "DEN", name: "Denmark", flag: "🇩🇰" },
+  { code: "ENG", name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { code: "FRA", name: "France", flag: "🇫🇷" },
+  { code: "GER", name: "Germany", flag: "🇩🇪" },
+  { code: "HUN", name: "Hungary", flag: "🇭🇺" },
+  { code: "IRL", name: "Ireland", flag: "🇮🇪" },
+  { code: "ITA", name: "Italy", flag: "🇮🇹" },
+  { code: "NED", name: "Netherlands", flag: "🇳🇱" },
+  { code: "POL", name: "Poland", flag: "🇵🇱" },
   { code: "POR", name: "Portugal", flag: "🇵🇹" },
-  { code: "ESP", name: "Espanha", flag: "🇪🇸" },
+  { code: "ESP", name: "Spain", flag: "🇪🇸" },
 ];
 
 const TOTAL = 20;
+const STORAGE_KEY = "copa2026_stickers";
+
 const INIT_STATE = () => {
   const s = {};
   TEAMS.forEach(t => { s[t.code] = Array(TOTAL).fill(0); });
   return s;
 };
 
-// 0 = faltando, 1 = tenho, 2 = repetida
 const C = {
   bg: "#0f2d1a", card: "rgba(255,255,255,0.05)", border: "rgba(255,255,255,0.1)",
   gold: "#c9a84c", green: "#1a4a2e", greenMid: "#2d6e47",
   cream: "#f5f0e8", gray: "#7a9a82", have: "#2ecc71", dup: "#f39c12",
   white: "#ffffff",
 };
+
+function loadStickers() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      // ensure all teams exist
+      const full = INIT_STATE();
+      TEAMS.forEach(t => { if (parsed[t.code]) full[t.code] = parsed[t.code]; });
+      return full;
+    }
+  } catch (e) {}
+  return INIT_STATE();
+}
 
 function getStats(stickers) {
   let have = 0, dup = 0, miss = 0;
@@ -87,18 +102,17 @@ function buildShareText(stickers) {
   });
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
-  const lines = [
-    `⚽ Figurinhas Copa 2026 — ${pct}% completo`,
-    `✅ ${stats.have} tenho  |  🔁 ${stats.dup} repetidas  |  ❌ ${stats.miss} faltando`,
+  return [
+    `⚽ World Cup 2026 Stickers — ${pct}% complete`,
+    `✅ ${stats.have} have  |  🔁 ${stats.dup} duplicates  |  ❌ ${stats.miss} missing`,
     "",
-    repeated.length ? `🔁 REPETIDAS (tenho pra trocar):\n${repeated.join("\n")}` : "🔁 Nenhuma repetida ainda",
+    repeated.length ? `🔁 DUPLICATES (available to trade):\n${repeated.join("\n")}` : "🔁 No duplicates yet",
     "",
-    missing.length ? `❌ FALTANDO:\n${missing.join("\n")}` : "❌ Álbum completo! 🏆",
-  ];
-  return lines.join("\n");
+    missing.length ? `❌ MISSING:\n${missing.join("\n")}` : "❌ Album complete! 🏆",
+  ].join("\n");
 }
 
-// ─── Team Modal ─────────────────────────────────────────────────────────────
+// ─── Team Modal ──────────────────────────────────────────────────────────────
 function TeamModal({ team, stickers, onToggle, onClose }) {
   return (
     <div onClick={onClose} style={{
@@ -110,7 +124,6 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
         background: "#0f2d1a", borderRadius: 16, width: "100%", maxWidth: 380,
         border: `2px solid ${C.gold}`, overflow: "hidden",
       }}>
-        {/* Header */}
         <div style={{
           background: `linear-gradient(135deg, ${C.green}, ${C.greenMid})`,
           borderBottom: `2px solid ${C.gold}`,
@@ -122,8 +135,8 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
             <div>
               <div style={{ color: C.gold, fontWeight: 800, fontSize: 16 }}>{team.name}</div>
               <div style={{ color: C.gray, fontSize: 12 }}>
-                {stickers.filter(s => s >= 1).length}/20 coletadas
-                {stickers.filter(s => s === 2).length > 0 && ` · ${stickers.filter(s => s === 2).length} repetidas`}
+                {stickers.filter(s => s >= 1).length}/20 collected
+                {stickers.filter(s => s === 2).length > 0 && ` · ${stickers.filter(s => s === 2).length} duplicates`}
               </div>
             </div>
           </div>
@@ -133,12 +146,11 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
           }}>✕</button>
         </div>
 
-        {/* Legend */}
         <div style={{ display: "flex", gap: 14, padding: "10px 16px", borderBottom: `1px solid ${C.border}` }}>
           {[
-            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.15)", label: "Faltando" },
-            { bg: "rgba(46,204,113,0.2)", border: C.have, label: "Tenho" },
-            { bg: "rgba(243,156,18,0.2)", border: C.dup, label: "Repetida" },
+            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.15)", label: "Missing" },
+            { bg: "rgba(46,204,113,0.2)", border: C.have, label: "Have" },
+            { bg: "rgba(243,156,18,0.2)", border: C.dup, label: "Duplicate" },
           ].map(l => (
             <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{ width: 14, height: 14, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
@@ -147,7 +159,6 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
           ))}
         </div>
 
-        {/* Grid 5×4 */}
         <div style={{ padding: 14, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 7 }}>
           {stickers.map((state, idx) => {
             const n = idx + 1;
@@ -156,7 +167,8 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
             const border = state === 1 ? C.have : state === 2 ? C.dup : "rgba(255,255,255,0.15)";
             const col = state === 1 ? C.have : state === 2 ? C.dup : C.gray;
             return (
-              <button key={n} onClick={() => onToggle(idx)} title={n === 1 ? "Escudo" : n === 13 ? "Foto do time" : `Jogador ${n}`}
+              <button key={n} onClick={() => onToggle(idx)}
+                title={n === 1 ? "Badge" : n === 13 ? "Team photo" : `Player ${n}`}
                 style={{
                   background: bg, border: `2px solid ${border}`, borderRadius: 8,
                   padding: "9px 4px", cursor: "pointer",
@@ -170,7 +182,7 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
           })}
         </div>
         <div style={{ color: C.gray, fontSize: 11, textAlign: "center", padding: "0 16px 14px" }}>
-          Toque para alternar: faltando → tenho → repetida
+          Tap to cycle: missing → have → duplicate
         </div>
       </div>
     </div>
@@ -205,16 +217,15 @@ function ShareSheet({ stickers, onClose }) {
           padding: "14px 16px",
           display: "flex", alignItems: "center", justifyContent: "space-between",
         }}>
-          <div style={{ color: C.gold, fontWeight: 800, fontSize: 15 }}>📤 Compartilhar no Slack</div>
+          <div style={{ color: C.gold, fontWeight: 800, fontSize: 15 }}>📤 Share on Slack</div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: C.white,
             borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16,
           }}>✕</button>
         </div>
-
         <div style={{ padding: 16 }}>
           <div style={{ color: C.gray, fontSize: 12, marginBottom: 10 }}>
-            Cole esse texto no grupo do Slack — qualquer pessoa entende sem precisar de nenhum app:
+            Paste this in your Slack group — anyone can read it without installing anything:
           </div>
           <textarea readOnly value={text} style={{
             width: "100%", background: "rgba(255,255,255,0.06)",
@@ -231,7 +242,7 @@ function ShareSheet({ stickers, onClose }) {
             padding: "12px 0", fontWeight: 800, fontSize: 15, cursor: "pointer",
             transition: "background 0.2s",
           }}>
-            {copied ? "✓ Copiado!" : "📋 Copiar texto"}
+            {copied ? "✓ Copied!" : "📋 Copy text"}
           </button>
         </div>
       </div>
@@ -241,10 +252,15 @@ function ShareSheet({ stickers, onClose }) {
 
 // ─── Main App ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [stickers, setStickers] = useState(INIT_STATE);
+  const [stickers, setStickers] = useState(loadStickers);
   const [activeTeam, setActiveTeam] = useState(null);
   const [showShare, setShowShare] = useState(false);
-  const [view, setView] = useState("all"); // "all" | "missing" | "repeated"
+  const [view, setView] = useState("all");
+
+  // Save to localStorage on every change
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers));
+  }, [stickers]);
 
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
@@ -261,14 +277,13 @@ export default function App() {
 
   const visibleTeams = TEAMS.filter(team => {
     if (view === "missing") return stickers[team.code].some(s => s === 0);
-    if (view === "repeated") return stickers[team.code].some(s => s === 2);
+    if (view === "duplicates") return stickers[team.code].some(s => s === 2);
     return true;
   });
 
   return (
     <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Inter', system-ui, sans-serif", color: C.white }}>
 
-      {/* Header */}
       <div style={{
         background: `linear-gradient(135deg, ${C.green} 0%, ${C.greenMid} 100%)`,
         borderBottom: `3px solid ${C.gold}`,
@@ -280,26 +295,25 @@ export default function App() {
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
               <span style={{ fontSize: 24 }}>⚽</span>
               <div>
-                <div style={{ color: C.gold, fontWeight: 900, fontSize: 16, textTransform: "uppercase", letterSpacing: 0.5 }}>Copa 2026</div>
-                <div style={{ color: C.cream, fontSize: 11, opacity: 0.6 }}>Minhas figurinhas</div>
+                <div style={{ color: C.gold, fontWeight: 900, fontSize: 16, textTransform: "uppercase", letterSpacing: 0.5 }}>World Cup 2026</div>
+                <div style={{ color: C.cream, fontSize: 11, opacity: 0.6 }}>My sticker collection</div>
               </div>
             </div>
             <button onClick={() => setShowShare(true)} style={{
               background: C.gold, color: C.green, border: "none",
               borderRadius: 10, padding: "8px 14px", fontWeight: 800,
-              fontSize: 13, cursor: "pointer", display: "flex", alignItems: "center", gap: 6,
+              fontSize: 13, cursor: "pointer",
             }}>
-              📤 Compartilhar
+              📤 Share
             </button>
           </div>
 
-          {/* Stats bar */}
           <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
             {[
-              { label: "Tenho", value: stats.have, color: C.have },
-              { label: "Repetidas", value: stats.dup, color: C.dup },
-              { label: "Faltando", value: stats.miss, color: "#e74c3c" },
-              { label: "Completo", value: `${pct}%`, color: C.gold },
+              { label: "Have", value: stats.have, color: C.have },
+              { label: "Duplicates", value: stats.dup, color: C.dup },
+              { label: "Missing", value: stats.miss, color: "#e74c3c" },
+              { label: "Complete", value: `${pct}%`, color: C.gold },
             ].map(s => (
               <div key={s.label} style={{ flex: 1, textAlign: "center" }}>
                 <div style={{ color: s.color, fontWeight: 800, fontSize: 16 }}>{s.value}</div>
@@ -308,20 +322,18 @@ export default function App() {
             ))}
           </div>
 
-          {/* Progress bar */}
           <div style={{ height: 5, background: "rgba(255,255,255,0.1)", borderRadius: 5, overflow: "hidden" }}>
             <div style={{ height: "100%", width: `${pct}%`, background: `linear-gradient(90deg, ${C.have}, ${C.gold})`, borderRadius: 5, transition: "width 0.4s" }} />
           </div>
         </div>
       </div>
 
-      {/* Filter tabs */}
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "12px 16px 0" }}>
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[
-            { key: "all", label: "Todas as seleções" },
-            { key: "repeated", label: `🔁 Repetidas` },
-            { key: "missing", label: `❌ Faltando` },
+            { key: "all", label: "All teams" },
+            { key: "duplicates", label: "🔁 Duplicates" },
+            { key: "missing", label: "❌ Missing" },
           ].map(f => (
             <button key={f.key} onClick={() => setView(f.key)} style={{
               background: view === f.key ? C.gold : "rgba(255,255,255,0.07)",
@@ -332,10 +344,9 @@ export default function App() {
           ))}
         </div>
 
-        {/* Team grid */}
         {visibleTeams.length === 0 ? (
           <div style={{ textAlign: "center", color: C.gray, padding: "40px 0", fontSize: 14 }}>
-            {view === "repeated" ? "Nenhuma repetida ainda" : "Nenhuma faltando — álbum completo! 🏆"}
+            {view === "duplicates" ? "No duplicates yet" : "Nothing missing — album complete! 🏆"}
           </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8, paddingBottom: 24 }}>
@@ -343,7 +354,6 @@ export default function App() {
               const s = stickers[team.code];
               const haveCount = s.filter(x => x >= 1).length;
               const dupCount = s.filter(x => x === 2).length;
-              const missCount = s.filter(x => x === 0).length;
               const pctTeam = Math.round(haveCount / TOTAL * 100);
               const isComplete = haveCount === TOTAL;
               return (
@@ -373,7 +383,6 @@ export default function App() {
         )}
       </div>
 
-      {/* Modals */}
       {activeTeam && currentTeam && (
         <TeamModal
           team={currentTeam}
