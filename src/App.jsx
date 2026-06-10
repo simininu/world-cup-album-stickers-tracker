@@ -237,7 +237,7 @@ function StickerCard({ team, stickers, onClick }) {
           <div style={{ flex: 1, height: 3, background: "rgba(255,255,255,0.12)", borderRadius: 3, overflow: "hidden" }}>
             <div style={{
               height: "100%", width: `${pct}%`,
-              background: isComplete ? "#27ae60" : dupCount > 0 ? "#f5a623" : regionColor,
+              background: isComplete ? "#27ae60" : "#f5c842",
               borderRadius: 3, transition: "width 0.3s",
             }} />
           </div>
@@ -663,8 +663,7 @@ export default function App() {
       {/* Header */}
       <div style={{
         background: "linear-gradient(160deg, #0a1f0f 0%, #0f3020 100%)",
-        borderBottom: "3px solid #f5c842",
-        padding: "16px 16px 14px",
+        padding: "16px 16px 20px",
         position: "sticky", top: 0, zIndex: 10,
       }}>
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
@@ -686,7 +685,6 @@ export default function App() {
               { label: "Have", value: stats.have, color: "#27ae60" },
               { label: "Dupes", value: stats.dup, color: "#f5a623" },
               { label: "Missing", value: stats.miss, color: "#e8523a" },
-              { label: "Done", value: `${pct}%`, color: "#f5c842" },
             ].map(s => (
               <div key={s.label} style={{
                 flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 8,
@@ -699,12 +697,15 @@ export default function App() {
           </div>
 
           {/* Progress bar */}
-          <div style={{ height: 6, background: "rgba(255,255,255,0.1)", borderRadius: 6, overflow: "hidden" }}>
-            <div style={{
-              height: "100%", width: `${pct}%`,
-              background: "linear-gradient(90deg, #27ae60, #f5c842)",
-              borderRadius: 6, transition: "width 0.4s",
-            }} />
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ flex: 1, height: 6, background: "rgba(255,255,255,0.1)", borderRadius: 6, overflow: "hidden" }}>
+              <div style={{
+                height: "100%", width: `${pct}%`,
+                background: "linear-gradient(90deg, #27ae60, #f5c842)",
+                borderRadius: 6, transition: "width 0.4s",
+              }} />
+            </div>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 12, minWidth: 80, textAlign: "right" }}>{pct}% completed</div>
           </div>
         </div>
       </div>
