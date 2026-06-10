@@ -1,5 +1,28 @@
 import { useState, useEffect } from "react";
 
+const SPECIAL = [
+  { code: "00", name: "Panini Logo" },
+  { code: "FWC1", name: "Official Emblem" },
+  { code: "FWC2", name: "Official Emblem" },
+  { code: "FWC3", name: "Official Mascots" },
+  { code: "FWC4", name: "Official Slogan" },
+  { code: "FWC5", name: "Official Ball" },
+  { code: "FWC6", name: "Canada — Host Countries & Cities" },
+  { code: "FWC7", name: "Mexico — Host Countries & Cities" },
+  { code: "FWC8", name: "USA — Host Countries & Cities" },
+  { code: "FWC9", name: "FIFA Museum — Uruguay 1930" },
+  { code: "FWC10", name: "FIFA Museum — Italy 1934" },
+  { code: "FWC11", name: "FIFA Museum — France 1938" },
+  { code: "FWC12", name: "FIFA Museum — Brazil 1950" },
+  { code: "FWC13", name: "FIFA Museum — Switzerland 1954" },
+  { code: "FWC14", name: "FIFA Museum — Sweden 1958" },
+  { code: "FWC15", name: "FIFA Museum — Chile 1962" },
+  { code: "FWC16", name: "FIFA Museum — England 1966" },
+  { code: "FWC17", name: "FIFA Museum — Mexico 1970" },
+  { code: "FWC18", name: "FIFA Museum — Germany 1974" },
+  { code: "FWC19", name: "FIFA Museum — Argentina 1978" },
+];
+
 const TEAMS = [
   { code: "MEX", name: "Mexico", flag: "🇲🇽" },
   { code: "RSA", name: "South Africa", flag: "🇿🇦" },
@@ -51,12 +74,12 @@ const TEAMS = [
   { code: "ESP", name: "Spain", flag: "🇪🇸" },
 ];
 
-const TOTAL = 20;
-const STORAGE_KEY = "copa2026_stickers";
+const TEAM_TOTAL = 20;
+const STORAGE_KEY = "copa2026_stickers_v2";
 
 const INIT_STATE = () => {
-  const s = {};
-  TEAMS.forEach(t => { s[t.code] = Array(TOTAL).fill(0); });
+  const s = { special: Array(SPECIAL.length).fill(0) };
+  TEAMS.forEach(t => { s[t.code] = Array(TEAM_TOTAL).fill(0); });
   return s;
 };
 
@@ -72,8 +95,8 @@ function loadStickers() {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
-      // ensure all teams exist
       const full = INIT_STATE();
+      if (parsed.special) full.special = parsed.special;
       TEAMS.forEach(t => { if (parsed[t.code]) full[t.code] = parsed[t.code]; });
       return full;
     }
@@ -83,14 +106,30 @@ function loadStickers() {
 
 function getStats(stickers) {
   let have = 0, dup = 0, miss = 0;
+  // special
+  stickers.special.forEach(s => {
+    if (s === 1) have++; else if (s === 2) dup++; else miss++;
+  });
+  // teams
   TEAMS.forEach(t => stickers[t.code].forEach(s => {
     if (s === 1) have++; else if (s === 2) dup++; else miss++;
   }));
-  return { have, dup, miss, total: TEAMS.length * TOTAL };
+  return { have, dup, miss, total: SPECIAL.length + TEAMS.length * TEAM_TOTAL };
 }
 
 function buildShareText(stickers) {
   const repeated = [], missing = [];
+
+  // Special stickers
+  const specRep = [], specMis = [];
+  stickers.special.forEach((s, i) => {
+    if (s === 2) specRep.push(SPECIAL[i].code);
+    if (s === 0) specMis.push(SPECIAL[i].code);
+  });
+  if (specRep.length) repeated.push(`Special: ${specRep.join(", ")}`);
+  if (specMis.length) missing.push(`Special: ${specMis.join(", ")}`);
+
+  // Teams
   TEAMS.forEach(t => {
     const rep = [], mis = [];
     stickers[t.code].forEach((s, i) => {
@@ -100,6 +139,7 @@ function buildShareText(stickers) {
     if (rep.length) repeated.push(`${t.code}: ${rep.join(", ")}`);
     if (mis.length) missing.push(`${t.code}: ${mis.join(", ")}`);
   });
+
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
   return [
@@ -110,6 +150,82 @@ function buildShareText(stickers) {
     "",
     missing.length ? `❌ MISSING:\n${missing.join("\n")}` : "❌ Album complete! 🏆",
   ].join("\n");
+}
+
+// ─── Special Stickers Modal ──────────────────────────────────────────────────
+function SpecialModal({ stickers, onToggle, onClose }) {
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      zIndex: 100, padding: 16,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0f2d1a", borderRadius: 16, width: "100%", maxWidth: 420,
+        border: `2px solid ${C.gold}`, overflow: "hidden", maxHeight: "85vh", display: "flex", flexDirection: "column",
+      }}>
+        <div style={{
+          background: `linear-gradient(135deg, ${C.green}, ${C.greenMid})`,
+          borderBottom: `2px solid ${C.gold}`,
+          padding: "14px 16px",
+          display: "flex", alignItems: "center", justifyContent: "space-between",
+          flexShrink: 0,
+        }}>
+          <div>
+            <div style={{ color: C.gold, fontWeight: 800, fontSize: 16 }}>✨ Special Stickers</div>
+            <div style={{ color: C.gray, fontSize: 12 }}>
+              {stickers.filter(s => s >= 1).length}/{SPECIAL.length} collected
+              {stickers.filter(s => s === 2).length > 0 && ` · ${stickers.filter(s => s === 2).length} duplicates`}
+            </div>
+          </div>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.1)", border: "none", color: C.white,
+            borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16,
+          }}>✕</button>
+        </div>
+
+        <div style={{ display: "flex", gap: 14, padding: "10px 16px", borderBottom: `1px solid ${C.border}`, flexShrink: 0 }}>
+          {[
+            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.15)", label: "Missing" },
+            { bg: "rgba(46,204,113,0.2)", border: C.have, label: "Have" },
+            { bg: "rgba(243,156,18,0.2)", border: C.dup, label: "Duplicate" },
+          ].map(l => (
+            <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
+              <div style={{ width: 14, height: 14, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
+              <span style={{ color: C.gray, fontSize: 11 }}>{l.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div style={{ overflowY: "auto", padding: 14, display: "flex", flexDirection: "column", gap: 6 }}>
+          {SPECIAL.map((sp, idx) => {
+            const state = stickers[idx];
+            const bg = state === 1 ? "rgba(46,204,113,0.2)" : state === 2 ? "rgba(243,156,18,0.2)" : "rgba(255,255,255,0.06)";
+            const border = state === 1 ? C.have : state === 2 ? C.dup : "rgba(255,255,255,0.15)";
+            const col = state === 1 ? C.have : state === 2 ? C.dup : C.gray;
+            return (
+              <button key={sp.code} onClick={() => onToggle(idx)} style={{
+                background: bg, border: `2px solid ${border}`, borderRadius: 8,
+                padding: "10px 12px", cursor: "pointer",
+                display: "flex", alignItems: "center", justifyContent: "space-between",
+              }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={{ color: C.gold, fontWeight: 800, fontSize: 13, fontFamily: "monospace", minWidth: 40 }}>{sp.code}</span>
+                  <span style={{ color: col, fontSize: 13 }}>{sp.name}</span>
+                </div>
+                {state === 2 && <span style={{ fontSize: 11, color: C.dup, fontWeight: 700 }}>2×</span>}
+                {state === 1 && <span style={{ fontSize: 11, color: C.have }}>✓</span>}
+              </button>
+            );
+          })}
+        </div>
+
+        <div style={{ color: C.gray, fontSize: 11, textAlign: "center", padding: "8px 16px 14px", flexShrink: 0 }}>
+          Tap to cycle: missing → have → duplicate
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── Team Modal ──────────────────────────────────────────────────────────────
@@ -162,13 +278,11 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
         <div style={{ padding: 14, display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: 7 }}>
           {stickers.map((state, idx) => {
             const n = idx + 1;
-            const isSpecial = n === 1 || n === 13;
             const bg = state === 1 ? "rgba(46,204,113,0.2)" : state === 2 ? "rgba(243,156,18,0.2)" : "rgba(255,255,255,0.06)";
             const border = state === 1 ? C.have : state === 2 ? C.dup : "rgba(255,255,255,0.15)";
             const col = state === 1 ? C.have : state === 2 ? C.dup : C.gray;
             return (
               <button key={n} onClick={() => onToggle(idx)}
-                title={n === 1 ? "Badge" : n === 13 ? "Team photo" : `Player ${n}`}
                 style={{
                   background: bg, border: `2px solid ${border}`, borderRadius: 8,
                   padding: "9px 4px", cursor: "pointer",
@@ -253,10 +367,10 @@ function ShareSheet({ stickers, onClose }) {
 export default function App() {
   const [stickers, setStickers] = useState(loadStickers);
   const [activeTeam, setActiveTeam] = useState(null);
+  const [showSpecial, setShowSpecial] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [view, setView] = useState("all");
 
-  // Save to localStorage on every change
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers));
   }, [stickers]);
@@ -272,7 +386,18 @@ export default function App() {
     });
   }
 
+  function toggleSpecial(idx) {
+    setStickers(prev => {
+      const updated = { ...prev, special: [...prev.special] };
+      updated.special[idx] = (updated.special[idx] + 1) % 3;
+      return updated;
+    });
+  }
+
   const currentTeam = activeTeam ? TEAMS.find(t => t.code === activeTeam) : null;
+
+  const specialHave = stickers.special.filter(s => s >= 1).length;
+  const specialDup = stickers.special.filter(s => s === 2).length;
 
   const visibleTeams = TEAMS.filter(team => {
     if (view === "missing") return stickers[team.code].some(s => s === 0);
@@ -283,6 +408,7 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: C.bg, fontFamily: "'Inter', system-ui, sans-serif", color: C.white }}>
 
+      {/* Header */}
       <div style={{
         background: `linear-gradient(135deg, ${C.green} 0%, ${C.greenMid} 100%)`,
         borderBottom: `3px solid ${C.gold}`,
@@ -302,9 +428,7 @@ export default function App() {
               background: C.gold, color: C.green, border: "none",
               borderRadius: 10, padding: "8px 14px", fontWeight: 800,
               fontSize: 13, cursor: "pointer",
-            }}>
-              📤 Share
-            </button>
+            }}>📤 Share</button>
           </div>
 
           <div style={{ display: "flex", gap: 12, marginBottom: 10 }}>
@@ -328,6 +452,8 @@ export default function App() {
       </div>
 
       <div style={{ maxWidth: 560, margin: "0 auto", padding: "12px 16px 0" }}>
+
+        {/* Filter tabs */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[
             { key: "all", label: "All teams" },
@@ -343,6 +469,34 @@ export default function App() {
           ))}
         </div>
 
+        {/* Special stickers card */}
+        {view === "all" && (
+          <button onClick={() => setShowSpecial(true)} style={{
+            width: "100%", background: specialDup > 0 ? "rgba(243,156,18,0.1)" : specialHave === SPECIAL.length ? "rgba(46,204,113,0.1)" : C.card,
+            border: specialDup > 0 ? `2px solid ${C.dup}` : specialHave === SPECIAL.length ? `2px solid ${C.have}` : `1px solid ${C.gold}`,
+            borderRadius: 10, padding: "12px 14px", cursor: "pointer",
+            textAlign: "left", marginBottom: 8,
+          }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 6 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <span style={{ fontSize: 22 }}>✨</span>
+                <div>
+                  <div style={{ color: C.gold, fontWeight: 700, fontSize: 13 }}>Special Stickers</div>
+                  <div style={{ fontSize: 11, color: C.gray, display: "flex", gap: 6 }}>
+                    <span>{specialHave}/{SPECIAL.length}</span>
+                    {specialDup > 0 && <span style={{ color: C.dup }}>🔁 {specialDup}</span>}
+                  </div>
+                </div>
+              </div>
+              <span style={{ color: C.gray, fontSize: 12 }}>FWC 00–19 →</span>
+            </div>
+            <div style={{ height: 3, background: "rgba(255,255,255,0.1)", borderRadius: 3, overflow: "hidden" }}>
+              <div style={{ height: "100%", width: `${Math.round(specialHave / SPECIAL.length * 100)}%`, background: specialDup > 0 ? C.dup : C.gold, borderRadius: 3 }} />
+            </div>
+          </button>
+        )}
+
+        {/* Team grid */}
         {visibleTeams.length === 0 ? (
           <div style={{ textAlign: "center", color: C.gray, padding: "40px 0", fontSize: 14 }}>
             {view === "duplicates" ? "No duplicates yet" : "Nothing missing — album complete! 🏆"}
@@ -353,8 +507,8 @@ export default function App() {
               const s = stickers[team.code];
               const haveCount = s.filter(x => x >= 1).length;
               const dupCount = s.filter(x => x === 2).length;
-              const pctTeam = Math.round(haveCount / TOTAL * 100);
-              const isComplete = haveCount === TOTAL;
+              const pctTeam = Math.round(haveCount / TEAM_TOTAL * 100);
+              const isComplete = haveCount === TEAM_TOTAL;
               return (
                 <button key={team.code} onClick={() => setActiveTeam(team.code)} style={{
                   background: isComplete ? "rgba(46,204,113,0.1)" : C.card,
@@ -382,6 +536,13 @@ export default function App() {
         )}
       </div>
 
+      {showSpecial && (
+        <SpecialModal
+          stickers={stickers.special}
+          onToggle={toggleSpecial}
+          onClose={() => setShowSpecial(false)}
+        />
+      )}
       {activeTeam && currentTeam && (
         <TeamModal
           team={currentTeam}
