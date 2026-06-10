@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Users, Repeat2, X, SendHorizontal } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -737,6 +737,100 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
     </div>
   );
 }
+// ─── Settings Modal ───────────────────────────────────────────────────────────
+function SettingsModal({ stickers, packs, onImport, onClose }) {
+  const [imported, setImported] = useState(false);
+  const [error, setError] = useState(false);
+
+  function handleExport() {
+    const data = JSON.stringify({ stickers, packs });
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `copa2026-backup-${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  function handleImport(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data.stickers) throw new Error("Invalid file");
+        onImport(data);
+        setImported(true);
+        setTimeout(() => setImported(false), 2000);
+      } catch {
+        setError(true);
+        setTimeout(() => setError(false), 2000);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      zIndex: 300, padding: 16,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0a1f0f", borderRadius: 16, width: "100%", maxWidth: 380,
+        border: "1px solid rgba(255,255,255,0.1)", overflow: "hidden",
+        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 18 }}>Settings</div>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
+          }}>Close</button>
+        </div>
+
+        <div style={{ padding: "0 16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4 }}>
+            Export your collection to a file and import it on another device.
+          </div>
+
+          {/* Export */}
+          <button onClick={handleExport} style={{
+            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: 10, padding: "14px 16px", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 12, textAlign: "left",
+          }}>
+            <div style={{ color: "#f5c842", fontSize: 22 }}>📤</div>
+            <div>
+              <div style={{ color: "#f5f0e8", fontWeight: 700, fontSize: 14 }}>Export collection</div>
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>Download a backup file</div>
+            </div>
+          </button>
+
+          {/* Import */}
+          <label style={{
+            background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)",
+            borderRadius: 10, padding: "14px 16px", cursor: "pointer",
+            display: "flex", alignItems: "center", gap: 12,
+          }}>
+            <input type="file" accept=".json" onChange={handleImport} style={{ display: "none" }} />
+            <div style={{ fontSize: 22 }}>{imported ? "✅" : error ? "❌" : "📥"}</div>
+            <div>
+              <div style={{ color: imported ? "#27ae60" : error ? "#e74c3c" : "#f5f0e8", fontWeight: 700, fontSize: 14 }}>
+                {imported ? "Imported!" : error ? "Invalid file" : "Import collection"}
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>Restore from a backup file</div>
+            </div>
+          </label>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
   const [stickers, setStickers] = useState(loadStickers);
   const [packs, setPacks] = useState(loadPacks);
@@ -747,6 +841,7 @@ export default function App() {
   const [showCollection, setShowCollection] = useState(false);
   const [showShare, setShowShare] = useState(false);
   const [showPacks, setShowPacks] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   const [view, setView] = useState("all");
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers)); }, [stickers]);
@@ -759,6 +854,11 @@ export default function App() {
 
   function addPack(p) { setPacks(prev => [...prev, p]); }
   function removePack(id) { setPacks(prev => prev.filter(p => p.id !== id)); }
+  function handleImport(data) {
+    if (data.stickers) setStickers(data.stickers);
+    if (data.packs) setPacks(data.packs);
+    setShowSettings(false);
+  }
 
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
@@ -837,11 +937,18 @@ export default function App() {
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 22, letterSpacing: 1, lineHeight: 1 }}>WORLD CUP 2026</div>
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Sticker Tracker</div>
             </div>
-            <button onClick={() => setShowPacks(true)} style={{
+            <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setShowPacks(true)} style={{
                 background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: 10, padding: "9px 14px",
                 fontFamily: "'Black Han Sans', sans-serif", fontSize: 13, cursor: "pointer",
               }}>🧧 {packs.reduce((s, p) => s + p.qty, 0)}</button>
+              <button onClick={() => setShowSettings(true)} style={{
+                background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 10, padding: "9px 12px", cursor: "pointer",
+                display: "flex", alignItems: "center",
+              }}><Settings size={16} strokeWidth={2} /></button>
+            </div>
           </div>
 
           {/* Dashboard cards */}
@@ -959,6 +1066,7 @@ export default function App() {
         <SendHorizontal size={16} strokeWidth={2} /> SHARE
       </button>
 
+      {showSettings && <SettingsModal stickers={stickers} packs={packs} onImport={handleImport} onClose={() => setShowSettings(false)} />}
       {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
       {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} />}
       {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
