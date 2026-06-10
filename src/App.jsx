@@ -288,7 +288,7 @@ function StickerCard({ team, stickers, onClick }) {
         </div>
 
         <div style={{ marginTop: 4, fontSize: 9, fontWeight: 800, height: 13 }}>
-          {dupCount > 0 && <span style={{ color: "#f5a623" }}>🔁 {dupCount} dup{dupCount > 1 ? "s" : ""}</span>}
+          {dupCount > 0 && <span style={{ color: "#f5a623", display: "flex", alignItems: "center", gap: 3, fontSize: 10 }}><Repeat2 size={10} strokeWidth={2} /> {dupCount} dup{dupCount > 1 ? "s" : ""}</span>}
           {isComplete && <span style={{ color: "#27ae60" }}>✓ Complete</span>}
         </div>
       </div>
@@ -328,7 +328,7 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{team.name}</div>
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>
                 {collected}/20 collected
-                {dups > 0 && <span style={{ color: "#f5a623", marginLeft: 8 }}>🔁 {dups} dup{dups > 1 ? "s" : ""}</span>}
+                {dups > 0 && <span style={{ color: "#f5a623", marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 3 }}><Repeat2 size={11} strokeWidth={2} /> {dups} dup{dups > 1 ? "s" : ""}</span>}
               </div>
             </div>
           </div>
@@ -1041,7 +1041,7 @@ export default function App() {
                 <span style={{ fontSize: 24 }}>✨</span>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 13 }}>SPECIAL STICKERS</div>
-                  {specialDup > 0 && <div style={{ fontSize: 11, color: "#f5a623" }}>🔁 {specialDup}</div>}
+                  {specialDup > 0 && <div style={{ fontSize: 11, color: "#f5a623", display: "flex", alignItems: "center", gap: 3 }}><Repeat2 size={10} strokeWidth={2} /> {specialDup} dup{specialDup > 1 ? "s" : ""}</div>}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
