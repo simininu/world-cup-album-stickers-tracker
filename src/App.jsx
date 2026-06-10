@@ -437,11 +437,11 @@ function ShareSheet({ stickers, onClose }) {
         overflow: "hidden", marginBottom: 8, boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
       }}>
         <div style={{ background: "#0a1f0f", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 16 }}>📤 Share on Slack</div>
+          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 16 }}>📤 Share with friends</div>
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
         </div>
         <div style={{ padding: 16 }}>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 10 }}>Paste this in your Slack group — anyone can read it without installing anything:</p>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 10 }}>Copy and paste this text anywhere — anyone can read it without installing anything:</p>
           <textarea readOnly value={text} style={{
             width: "100%", background: "#0f2d1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
             padding: "10px 12px", color: "#f5f0e8", fontSize: 12, fontFamily: "monospace",
