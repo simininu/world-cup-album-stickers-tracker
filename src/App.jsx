@@ -29,78 +29,71 @@ const SPECIAL = [
   { code: "FWC19", name: "FIFA Museum — Argentina 1978" },
 ];
 
-// continent color per team
 const TEAMS = [
-  { code: "MEX", name: "Mexico", flag: "🇲🇽", region: "concacaf" },
-  { code: "RSA", name: "South Africa", flag: "🇿🇦", region: "africa" },
-  { code: "USA", name: "United States", flag: "🇺🇸", region: "concacaf" },
-  { code: "CAN", name: "Canada", flag: "🇨🇦", region: "concacaf" },
-  { code: "ARG", name: "Argentina", flag: "🇦🇷", region: "south_america" },
-  { code: "BOL", name: "Bolivia", flag: "🇧🇴", region: "south_america" },
-  { code: "BRA", name: "Brazil", flag: "🇧🇷", region: "south_america" },
-  { code: "CHI", name: "Chile", flag: "🇨🇱", region: "south_america" },
-  { code: "COL", name: "Colombia", flag: "🇨🇴", region: "south_america" },
-  { code: "ECU", name: "Ecuador", flag: "🇪🇨", region: "south_america" },
-  { code: "PAR", name: "Paraguay", flag: "🇵🇾", region: "south_america" },
-  { code: "PER", name: "Peru", flag: "🇵🇪", region: "south_america" },
-  { code: "URU", name: "Uruguay", flag: "🇺🇾", region: "south_america" },
-  { code: "VEN", name: "Venezuela", flag: "🇻🇪", region: "south_america" },
-  { code: "CRC", name: "Costa Rica", flag: "🇨🇷", region: "concacaf" },
-  { code: "HON", name: "Honduras", flag: "🇭🇳", region: "concacaf" },
-  { code: "JAM", name: "Jamaica", flag: "🇯🇲", region: "concacaf" },
-  { code: "PAN", name: "Panama", flag: "🇵🇦", region: "concacaf" },
-  { code: "AUS", name: "Australia", flag: "🇦🇺", region: "oceania" },
-  { code: "CHN", name: "China", flag: "🇨🇳", region: "asia" },
-  { code: "JPN", name: "Japan", flag: "🇯🇵", region: "asia" },
-  { code: "KOR", name: "South Korea", flag: "🇰🇷", region: "asia" },
-  { code: "NZL", name: "New Zealand", flag: "🇳🇿", region: "oceania" },
-  { code: "THA", name: "Thailand", flag: "🇹🇭", region: "asia" },
-  { code: "IRN", name: "Iran", flag: "🇮🇷", region: "asia" },
-  { code: "JOR", name: "Jordan", flag: "🇯🇴", region: "asia" },
-  { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦", region: "asia" },
-  { code: "UZB", name: "Uzbekistan", flag: "🇺🇿", region: "asia" },
-  { code: "CMR", name: "Cameroon", flag: "🇨🇲", region: "africa" },
-  { code: "COD", name: "DR Congo", flag: "🇨🇩", region: "africa" },
-  { code: "EGY", name: "Egypt", flag: "🇪🇬", region: "africa" },
-  { code: "MAR", name: "Morocco", flag: "🇲🇦", region: "africa" },
-  { code: "NGA", name: "Nigeria", flag: "🇳🇬", region: "africa" },
-  { code: "SEN", name: "Senegal", flag: "🇸🇳", region: "africa" },
-  { code: "TZA", name: "Tanzania", flag: "🇹🇿", region: "africa" },
-  { code: "BEL", name: "Belgium", flag: "🇧🇪", region: "europe" },
-  { code: "CRO", name: "Croatia", flag: "🇭🇷", region: "europe" },
-  { code: "DEN", name: "Denmark", flag: "🇩🇰", region: "europe" },
-  { code: "ENG", name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", region: "europe" },
-  { code: "FRA", name: "France", flag: "🇫🇷", region: "europe" },
-  { code: "GER", name: "Germany", flag: "🇩🇪", region: "europe" },
-  { code: "HUN", name: "Hungary", flag: "🇭🇺", region: "europe" },
-  { code: "IRL", name: "Ireland", flag: "🇮🇪", region: "europe" },
-  { code: "ITA", name: "Italy", flag: "🇮🇹", region: "europe" },
-  { code: "NED", name: "Netherlands", flag: "🇳🇱", region: "europe" },
-  { code: "POL", name: "Poland", flag: "🇵🇱", region: "europe" },
-  { code: "POR", name: "Portugal", flag: "🇵🇹", region: "europe" },
-  { code: "ESP", name: "Spain", flag: "🇪🇸", region: "europe" },
+  // Group A
+  { code: "MEX", name: "Mexico", flag: "🇲🇽" },
+  { code: "RSA", name: "South Africa", flag: "🇿🇦" },
+  { code: "KOR", name: "South Korea", flag: "🇰🇷" },
+  { code: "CZE", name: "Czechia", flag: "🇨🇿" },
+  // Group B
+  { code: "CAN", name: "Canada", flag: "🇨🇦" },
+  { code: "BIH", name: "Bosnia-Herzegovina", flag: "🇧🇦" },
+  { code: "QAT", name: "Qatar", flag: "🇶🇦" },
+  { code: "SUI", name: "Switzerland", flag: "🇨🇭" },
+  // Group C
+  { code: "BRA", name: "Brazil", flag: "🇧🇷" },
+  { code: "MAR", name: "Morocco", flag: "🇲🇦" },
+  { code: "HAI", name: "Haiti", flag: "🇭🇹" },
+  { code: "SCO", name: "Scotland", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  // Group D
+  { code: "USA", name: "United States", flag: "🇺🇸" },
+  { code: "PAR", name: "Paraguay", flag: "🇵🇾" },
+  { code: "AUS", name: "Australia", flag: "🇦🇺" },
+  { code: "TUR", name: "Turkey", flag: "🇹🇷" },
+  // Group E
+  { code: "GER", name: "Germany", flag: "🇩🇪" },
+  { code: "CUW", name: "Curaçao", flag: "🇨🇼" },
+  { code: "CIV", name: "Côte d'Ivoire", flag: "🇨🇮" },
+  { code: "ECU", name: "Ecuador", flag: "🇪🇨" },
+  // Group F
+  { code: "NED", name: "Netherlands", flag: "🇳🇱" },
+  { code: "JPN", name: "Japan", flag: "🇯🇵" },
+  { code: "SWE", name: "Sweden", flag: "🇸🇪" },
+  { code: "TUN", name: "Tunisia", flag: "🇹🇳" },
+  // Group G
+  { code: "BEL", name: "Belgium", flag: "🇧🇪" },
+  { code: "EGY", name: "Egypt", flag: "🇪🇬" },
+  { code: "IRN", name: "Iran", flag: "🇮🇷" },
+  { code: "NZL", name: "New Zealand", flag: "🇳🇿" },
+  // Group H
+  { code: "ESP", name: "Spain", flag: "🇪🇸" },
+  { code: "CPV", name: "Cabo Verde", flag: "🇨🇻" },
+  { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "URU", name: "Uruguay", flag: "🇺🇾" },
+  // Group I
+  { code: "FRA", name: "France", flag: "🇫🇷" },
+  { code: "SEN", name: "Senegal", flag: "🇸🇳" },
+  { code: "IRQ", name: "Iraq", flag: "🇮🇶" },
+  { code: "NOR", name: "Norway", flag: "🇳🇴" },
+  // Group J
+  { code: "ARG", name: "Argentina", flag: "🇦🇷" },
+  { code: "ALG", name: "Algeria", flag: "🇩🇿" },
+  { code: "AUT", name: "Austria", flag: "🇦🇹" },
+  { code: "JOR", name: "Jordan", flag: "🇯🇴" },
+  // Group K
+  { code: "POR", name: "Portugal", flag: "🇵🇹" },
+  { code: "COD", name: "DR Congo", flag: "🇨🇩" },
+  { code: "UZB", name: "Uzbekistan", flag: "🇺🇿" },
+  { code: "COL", name: "Colombia", flag: "🇨🇴" },
+  // Group L
+  { code: "ENG", name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
+  { code: "CRO", name: "Croatia", flag: "🇭🇷" },
+  { code: "GHA", name: "Ghana", flag: "🇬🇭" },
+  { code: "PAN", name: "Panama", flag: "🇵🇦" },
 ];
 
-const REGION_COLORS = {
-  south_america: "#f5a623",
-  europe: "#4a90d9",
-  africa: "#e8523a",
-  asia: "#9b59b6",
-  concacaf: "#27ae60",
-  oceania: "#16a085",
-};
-
-const REGION_LABELS = {
-  south_america: "South America",
-  europe: "Europe",
-  africa: "Africa",
-  asia: "Asia",
-  concacaf: "CONCACAF",
-  oceania: "Oceania",
-};
-
 const TEAM_TOTAL = 20;
-const STORAGE_KEY = "copa2026_stickers_v2";
+const STORAGE_KEY = "copa2026_stickers_v3";
 
 const INIT_STATE = () => {
   const s = { special: Array(SPECIAL.length).fill(0) };
@@ -180,7 +173,6 @@ function StickerCard({ team, stickers, onClick }) {
   const haveCount = stickers.filter(s => s >= 1).length;
   const dupCount = stickers.filter(s => s === 2).length;
   const isComplete = haveCount === TEAM_TOTAL;
-  const regionColor = REGION_COLORS[team.region];
   const pct = Math.round(haveCount / TEAM_TOTAL * 100);
 
   return (
@@ -293,7 +285,7 @@ function NumberGrid({ stickers, onToggle, color }) {
 
 // ─── Team Modal ───────────────────────────────────────────────────────────────
 function TeamModal({ team, stickers, onToggle, onClose }) {
-  const regionColor = REGION_COLORS[team.region];
+  const modalColor = "#2d6e47";
   return (
     <div onClick={onClose} style={{
       position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
@@ -335,7 +327,7 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
           ))}
         </div>
 
-        <NumberGrid stickers={stickers} onToggle={onToggle} color={regionColor} />
+        <NumberGrid stickers={stickers} onToggle={onToggle} color={modalColor} />
 
         <div style={{ color: "#aaa", fontSize: 11, textAlign: "center", padding: "0 16px 14px" }}>
           Tap to cycle: missing → have → duplicate
@@ -619,9 +611,6 @@ export default function App() {
     if (view === "duplicates") return stickers[team.code].some(s => s === 2);
     return true;
   });
-
-  // Group visible teams by region when showing all
-  const regions = ["south_america", "europe", "africa", "asia", "concacaf", "oceania"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1f0f", fontFamily: "'Inter', system-ui, sans-serif" }}>
