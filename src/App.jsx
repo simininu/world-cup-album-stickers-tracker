@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -32,65 +32,65 @@ const SPECIAL = [
 
 const TEAMS = [
   // Group A
-  { code: "MEX", name: "Mexico", flag: "🇲🇽" },
-  { code: "RSA", name: "South Africa", flag: "🇿🇦" },
-  { code: "KOR", name: "Korea Republic", flag: "🇰🇷" },
-  { code: "CZE", name: "Czechia", flag: "🇨🇿" },
+  { code: "MEX", name: "Mexico", flag: "🇲🇽", group: "A" },
+  { code: "RSA", name: "South Africa", flag: "🇿🇦", group: "A" },
+  { code: "KOR", name: "Korea Republic", flag: "🇰🇷", group: "A" },
+  { code: "CZE", name: "Czechia", flag: "🇨🇿", group: "A" },
   // Group B
-  { code: "CAN", name: "Canada", flag: "🇨🇦" },
-  { code: "BIH", name: "Bosnia-Herzegovina", flag: "🇧🇦" },
-  { code: "QAT", name: "Qatar", flag: "🇶🇦" },
-  { code: "SUI", name: "Switzerland", flag: "🇨🇭" },
+  { code: "CAN", name: "Canada", flag: "🇨🇦", group: "B" },
+  { code: "BIH", name: "Bosnia-Herzegovina", flag: "🇧🇦", group: "B" },
+  { code: "QAT", name: "Qatar", flag: "🇶🇦", group: "B" },
+  { code: "SUI", name: "Switzerland", flag: "🇨🇭", group: "B" },
   // Group C
-  { code: "BRA", name: "Brazil", flag: "🇧🇷" },
-  { code: "MAR", name: "Morocco", flag: "🇲🇦" },
-  { code: "HAI", name: "Haiti", flag: "🇭🇹" },
-  { code: "SCO", name: "Scotland", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+  { code: "BRA", name: "Brazil", flag: "🇧🇷", group: "C" },
+  { code: "MAR", name: "Morocco", flag: "🇲🇦", group: "C" },
+  { code: "HAI", name: "Haiti", flag: "🇭🇹", group: "C" },
+  { code: "SCO", name: "Scotland", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", group: "C" },
   // Group D
-  { code: "USA", name: "United States", flag: "🇺🇸" },
-  { code: "PAR", name: "Paraguay", flag: "🇵🇾" },
-  { code: "AUS", name: "Australia", flag: "🇦🇺" },
-  { code: "TUR", name: "Turkey", flag: "🇹🇷" },
+  { code: "USA", name: "United States", flag: "🇺🇸", group: "D" },
+  { code: "PAR", name: "Paraguay", flag: "🇵🇾", group: "D" },
+  { code: "AUS", name: "Australia", flag: "🇦🇺", group: "D" },
+  { code: "TUR", name: "Turkey", flag: "🇹🇷", group: "D" },
   // Group E
-  { code: "GER", name: "Germany", flag: "🇩🇪" },
-  { code: "CUW", name: "Curaçao", flag: "🇨🇼" },
-  { code: "CIV", name: "Côte d'Ivoire", flag: "🇨🇮" },
-  { code: "ECU", name: "Ecuador", flag: "🇪🇨" },
+  { code: "GER", name: "Germany", flag: "🇩🇪", group: "E" },
+  { code: "CUW", name: "Curaçao", flag: "🇨🇼", group: "E" },
+  { code: "CIV", name: "Côte d'Ivoire", flag: "🇨🇮", group: "E" },
+  { code: "ECU", name: "Ecuador", flag: "🇪🇨", group: "E" },
   // Group F
-  { code: "NED", name: "Netherlands", flag: "🇳🇱" },
-  { code: "JPN", name: "Japan", flag: "🇯🇵" },
-  { code: "SWE", name: "Sweden", flag: "🇸🇪" },
-  { code: "TUN", name: "Tunisia", flag: "🇹🇳" },
+  { code: "NED", name: "Netherlands", flag: "🇳🇱", group: "F" },
+  { code: "JPN", name: "Japan", flag: "🇯🇵", group: "F" },
+  { code: "SWE", name: "Sweden", flag: "🇸🇪", group: "F" },
+  { code: "TUN", name: "Tunisia", flag: "🇹🇳", group: "F" },
   // Group G
-  { code: "BEL", name: "Belgium", flag: "🇧🇪" },
-  { code: "EGY", name: "Egypt", flag: "🇪🇬" },
-  { code: "IRN", name: "Iran", flag: "🇮🇷" },
-  { code: "NZL", name: "New Zealand", flag: "🇳🇿" },
+  { code: "BEL", name: "Belgium", flag: "🇧🇪", group: "G" },
+  { code: "EGY", name: "Egypt", flag: "🇪🇬", group: "G" },
+  { code: "IRN", name: "Iran", flag: "🇮🇷", group: "G" },
+  { code: "NZL", name: "New Zealand", flag: "🇳🇿", group: "G" },
   // Group H
-  { code: "ESP", name: "Spain", flag: "🇪🇸" },
-  { code: "CPV", name: "Cabo Verde", flag: "🇨🇻" },
-  { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦" },
-  { code: "URU", name: "Uruguay", flag: "🇺🇾" },
+  { code: "ESP", name: "Spain", flag: "🇪🇸", group: "H" },
+  { code: "CPV", name: "Cabo Verde", flag: "🇨🇻", group: "H" },
+  { code: "KSA", name: "Saudi Arabia", flag: "🇸🇦", group: "H" },
+  { code: "URU", name: "Uruguay", flag: "🇺🇾", group: "H" },
   // Group I
-  { code: "FRA", name: "France", flag: "🇫🇷" },
-  { code: "SEN", name: "Senegal", flag: "🇸🇳" },
-  { code: "IRQ", name: "Iraq", flag: "🇮🇶" },
-  { code: "NOR", name: "Norway", flag: "🇳🇴" },
+  { code: "FRA", name: "France", flag: "🇫🇷", group: "I" },
+  { code: "SEN", name: "Senegal", flag: "🇸🇳", group: "I" },
+  { code: "IRQ", name: "Iraq", flag: "🇮🇶", group: "I" },
+  { code: "NOR", name: "Norway", flag: "🇳🇴", group: "I" },
   // Group J
-  { code: "ARG", name: "Argentina", flag: "🇦🇷" },
-  { code: "ALG", name: "Algeria", flag: "🇩🇿" },
-  { code: "AUT", name: "Austria", flag: "🇦🇹" },
-  { code: "JOR", name: "Jordan", flag: "🇯🇴" },
+  { code: "ARG", name: "Argentina", flag: "🇦🇷", group: "J" },
+  { code: "ALG", name: "Algeria", flag: "🇩🇿", group: "J" },
+  { code: "AUT", name: "Austria", flag: "🇦🇹", group: "J" },
+  { code: "JOR", name: "Jordan", flag: "🇯🇴", group: "J" },
   // Group K
-  { code: "POR", name: "Portugal", flag: "🇵🇹" },
-  { code: "COD", name: "DR Congo", flag: "🇨🇩" },
-  { code: "UZB", name: "Uzbekistan", flag: "🇺🇿" },
-  { code: "COL", name: "Colombia", flag: "🇨🇴" },
+  { code: "POR", name: "Portugal", flag: "🇵🇹", group: "K" },
+  { code: "COD", name: "DR Congo", flag: "🇨🇩", group: "K" },
+  { code: "UZB", name: "Uzbekistan", flag: "🇺🇿", group: "K" },
+  { code: "COL", name: "Colombia", flag: "🇨🇴", group: "K" },
   // Group L
-  { code: "ENG", name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿" },
-  { code: "CRO", name: "Croatia", flag: "🇭🇷" },
-  { code: "GHA", name: "Ghana", flag: "🇬🇭" },
-  { code: "PAN", name: "Panama", flag: "🇵🇦" },
+  { code: "ENG", name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", group: "L" },
+  { code: "CRO", name: "Croatia", flag: "🇭🇷", group: "L" },
+  { code: "GHA", name: "Ghana", flag: "🇬🇭", group: "L" },
+  { code: "PAN", name: "Panama", flag: "🇵🇦", group: "L" },
 ];
 
 const PLAYERS = {
@@ -334,8 +334,8 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
           </div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
-            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
-          }}>Close</button>
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
         </div>
 
         {/* Legend */}
@@ -438,8 +438,8 @@ function CollectionModal({ stickers, onClose }) {
           <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 22 }}>My Collection <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>({Object.values(stickers).flat().filter(s => s >= 1).length})</span></div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
-            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
-          }}>Close</button>
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
         </div>
 
         {/* Scrollable list */}
@@ -524,67 +524,77 @@ function SpecialModal({ stickers, onToggle, onClose }) {
 
   return (
     <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.75)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 100, padding: 16,
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 100,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: "#1e3a2a", borderRadius: 16, width: "100%", maxWidth: 420,
-        overflow: "hidden", maxHeight: "85vh", display: "flex", flexDirection: "column",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.4)",
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
       }}>
-        <div style={{
-          background: "linear-gradient(135deg, #1a1a2e, #16213e)",
-          padding: "14px 16px",
-          display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0,
-        }}>
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>✨ Special Stickers</div>
-            <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 12 }}>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>✨ Special Stickers</div>
+            <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>
               {stickers.filter(s => s >= 1).length}/{SPECIAL.length} collected
             </div>
           </div>
           <button onClick={onClose} style={{
-            background: "rgba(255,255,255,0.15)", border: "none", color: "#fff",
-            borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16,
-          }}>✕</button>
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
         </div>
 
-        <div style={{ overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 6 }}>
-          {SPECIAL.map((sp, idx) => {
-            const state = stickers[idx];
-            let bg, border, textCol;
-            if (state === 0) { bg = "rgba(255,255,255,0.05)"; border = "rgba(255,255,255,0.12)"; textCol = "rgba(255,255,255,0.4)"; }
-            else if (state === 1) { bg = "rgba(39,174,96,0.15)"; border = "#27ae60"; textCol = "#27ae60"; }
-            else { bg = "rgba(245,166,35,0.15)"; border = "#f5a623"; textCol = "#f5a623"; }
+        <div style={{ overflowY: "auto", padding: "0 12px 24px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
+            {SPECIAL.map((sp, idx) => {
+              const state = stickers[idx];
+              let bg, border, textCol, badge;
+              if (state === 0) { bg = "rgba(255,255,255,0.05)"; border = "rgba(255,255,255,0.1)"; textCol = "rgba(255,255,255,0.25)"; badge = null; }
+              else if (state === 1) { bg = "rgba(39,174,96,0.15)"; border = "#27ae60"; textCol = "#27ae60"; badge = "x1"; }
+              else { bg = "rgba(245,166,35,0.15)"; border = "#f5a623"; textCol = "#f5a623"; badge = "x2"; }
 
-            return (
-              <button
-                key={sp.code}
-                onClick={() => handleTap(idx)}
-                className={poppingIdx === idx ? "sticker-pop" : ""}
-                style={{
-                  background: bg, border: `2px solid ${border}`,
-                  borderRadius: 10, padding: "10px 12px", cursor: "pointer",
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              return (
+                <button
+                  key={sp.code}
+                  onClick={() => handleTap(idx)}
+                  className={poppingIdx === idx ? "sticker-pop" : ""}
+                  style={{
+                    background: bg, border: `2px solid ${border}`,
+                    borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
+                    display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                    position: "relative", minHeight: 110,
+                  }}>
+                  {/* Code label top-left */}
                   <span style={{
-                    fontFamily: "'Black Han Sans', sans-serif",
-                    background: state === 0 ? "rgba(255,255,255,0.15)" : border,
-                    color: "#fff",
-                    padding: "2px 7px", borderRadius: 5, fontSize: 11, minWidth: 44, textAlign: "center",
+                    position: "absolute", top: 7, left: 8,
+                    color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8,
                   }}>{sp.code}</span>
-                  <span style={{ color: state === 0 ? "rgba(255,255,255,0.85)" : textCol, fontSize: 13, fontWeight: 600 }}>{sp.name}</span>
-                </div>
-                {state === 2 && <span style={{ fontSize: 11, color: "#f5a623", fontWeight: 800 }}>2×</span>}
-                {state === 1 && <span style={{ fontSize: 16 }}>✓</span>}
-              </button>
-            );
-          })}
-        </div>
-        <div style={{ color: "#aaa", fontSize: 11, textAlign: "center", padding: "8px 16px 14px", flexShrink: 0, borderTop: "1px solid rgba(255,255,255,0.1)" }}>
-          Tap to cycle: missing → have → duplicate
+
+                  {/* Icon */}
+                  <div style={{ opacity: state === 0 ? 0.15 : 0.85, marginTop: 18, color: state === 0 ? "#fff" : textCol }}>
+                    <Star size={30} strokeWidth={1.5} />
+                  </div>
+
+                  {/* Name */}
+                  <span style={{
+                    color: state === 0 ? "rgba(255,255,255,0.3)" : textCol,
+                    fontSize: 9, textAlign: "center", lineHeight: 1.3,
+                    padding: "0 2px", wordBreak: "break-word",
+                  }}>{sp.name}</span>
+
+                  {/* Badge */}
+                  {badge && (
+                    <div style={{
+                      background: border, color: "#0a1f0f",
+                      borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
+                    }}>{badge}</div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -661,51 +671,51 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
 
   return (
     <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 100, padding: 16,
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 100,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: "#0a1f0f", borderRadius: 16, width: "100%", maxWidth: 420,
-        border: "2px solid #f5c842", overflow: "hidden", maxHeight: "85vh",
-        display: "flex", flexDirection: "column",
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
       }}>
         {/* Header */}
-        <div style={{ background: "linear-gradient(135deg, #0a1f0f, #1a4a2e)", borderBottom: "2px solid #f5c842", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div>
-            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Package size={20} color="#f5c842" strokeWidth={1.5} />
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>Pack Tracker</div>
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Package size={22} color="#f5f0e8" strokeWidth={1.5} />
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>Pack Tracker</div>
           </div>
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Track your pack purchases</div>
-          </div>
-          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
         </div>
 
         {/* Summary */}
-        <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 8, padding: "0 16px 12px", flexShrink: 0 }}>
           {[
             { label: "Packs", value: totalPacks },
             { label: "Total spent", value: `€${totalSpent.toFixed(2)}` },
             { label: "Avg / pack", value: `€${avgPrice.toFixed(2)}` },
           ].map(s => (
-            <div key={s.label} style={{ flex: 1, background: "rgba(255,255,255,0.05)", borderRadius: 8, padding: "8px 6px", textAlign: "center" }}>
-              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>{s.value}</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>{s.label}</div>
+            <div key={s.label} style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 6px", textAlign: "center" }}>
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 18 }}>{s.value}</div>
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>{s.label}</div>
             </div>
           ))}
         </div>
 
         {/* Add purchase */}
-        <div style={{ padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
-          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Add purchase</div>
+        <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(255,255,255,0.08)", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Add purchase</div>
           <div style={{ display: "flex", gap: 8 }}>
             <div style={{ flex: 1 }}>
               <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>Packs</div>
               <input
                 type="number" min="1" value={qty}
                 onChange={e => setQty(e.target.value)}
-                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -713,7 +723,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
               <input
                 type="number" min="0" step="0.01" value={price}
                 onChange={e => setPrice(e.target.value)}
-                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
               />
             </div>
             <div style={{ display: "flex", alignItems: "flex-end" }}>
@@ -727,7 +737,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
           {packs.length === 0 ? (
             <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "24px 0", fontSize: 13 }}>No purchases yet</div>
           ) : [...packs].reverse().map(p => (
-            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.05)", borderRadius: 8, padding: "10px 12px" }}>
+            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: "10px 12px" }}>
               <div>
                 <div style={{ color: "#f5f0e8", fontSize: 13, fontWeight: 700 }}>{p.qty} pack{p.qty > 1 ? "s" : ""} · €{(p.qty * p.price).toFixed(2)}</div>
                 <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>€{p.price.toFixed(2)} each · {p.date}</div>
@@ -777,25 +787,27 @@ function SettingsModal({ stickers, packs, onImport, onClose }) {
 
   return (
     <div onClick={onClose} style={{
-      position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
-      display: "flex", alignItems: "center", justifyContent: "center",
-      zIndex: 300, padding: 16,
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 300,
     }}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: "#0a1f0f", borderRadius: 16, width: "100%", maxWidth: 380,
-        border: "1px solid rgba(255,255,255,0.1)", overflow: "hidden",
-        boxShadow: "0 20px 60px rgba(0,0,0,0.5)",
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
       }}>
         {/* Header */}
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 18 }}>Settings</div>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Settings size={22} color="#f5f0e8" strokeWidth={1.5} />
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>Settings</div>
+          </div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
-            borderRadius: 20, padding: "6px 12px", cursor: "pointer", fontSize: 13, fontWeight: 600,
-          }}>Close</button>
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
         </div>
 
-        <div style={{ padding: "0 16px 20px", display: "flex", flexDirection: "column", gap: 10 }}>
+        <div style={{ padding: "0 16px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
           <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4 }}>
             Export your collection to a file and import it on another device.
           </div>
@@ -890,6 +902,8 @@ export default function App() {
     if (view === "duplicates") return stickers[team.code].some(s => s === 2);
     return true;
   });
+
+  const GROUPS = ["A","B","C","D","E","F","G","H","I","J","K","L"];
 
   return (
     <div style={{ minHeight: "100vh", background: "#0a1f0f", fontFamily: "'Inter', system-ui, sans-serif" }}>
@@ -995,6 +1009,7 @@ export default function App() {
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[
             { key: "all", label: "All", icon: null },
+            { key: "groups", label: "Groups", icon: null },
             { key: "duplicates", label: "Duplicates", icon: <Repeat2 size={12} strokeWidth={2} /> },
             { key: "missing", label: "Missing", icon: <X size={12} strokeWidth={2.5} /> },
           ].map(f => (
@@ -1015,29 +1030,33 @@ export default function App() {
         {/* Special stickers card */}
         {view === "all" && (
           <button onClick={() => setShowSpecial(true)} style={{
-            width: "100%", background: "#1e3a2a", border: "none",
+            width: "100%", background: "rgba(100,45,10,0.3)", border: "1px solid rgba(200,120,40,0.3)",
             borderRadius: 10, overflow: "hidden", cursor: "pointer",
             marginBottom: 16, padding: 0,
-            boxShadow: specialDup > 0 ? "0 4px 16px rgba(245,166,35,0.4)" : "0 2px 10px rgba(0,0,0,0.3)",
+            boxShadow: specialDup > 0 ? "0 4px 16px rgba(245,166,35,0.3)" : "none",
           }}>
-            <div style={{ background: "#2d6e47", height: 7 }} />
+            <div style={{ background: "linear-gradient(90deg, #5c2008, #c9621a)", height: 7 }} />
             <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 24 }}>✨</span>
                 <div style={{ textAlign: "left" }}>
                   <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 13 }}>SPECIAL STICKERS</div>
-                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.45)" }}>
-                    {specialHave}/{SPECIAL.length} · FWC 00–19
-                    {specialDup > 0 && <span style={{ color: "#f5a623", marginLeft: 6 }}>🔁 {specialDup} dups</span>}
-                  </div>
+                  {specialDup > 0 && <div style={{ fontSize: 11, color: "#f5a623" }}>🔁 {specialDup}</div>}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
-                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.45)" }}>→</div>
+                <div style={{
+                  background: "rgba(255,255,255,0.12)", color: "rgba(255,255,255,0.6)",
+                  fontFamily: "'Black Han Sans', sans-serif",
+                  fontSize: 9, padding: "1px 5px", borderRadius: 4, letterSpacing: 0.5,
+                }}>FWC</div>
               </div>
             </div>
-            <div style={{ height: 3, background: "rgba(255,255,255,0.1)", margin: "0 14px 10px" }}>
-              <div style={{ height: "100%", width: `${Math.round(specialHave / SPECIAL.length * 100)}%`, background: "#1a1a2e", borderRadius: 3 }} />
+            <div style={{ display: "flex", alignItems: "center", gap: 5, margin: "0 14px 10px" }}>
+              <div style={{ flex: 1, height: 3, background: "rgba(255,255,255,0.1)", borderRadius: 3, overflow: "hidden" }}>
+                <div style={{ height: "100%", width: `${Math.round(specialHave / SPECIAL.length * 100)}%`, background: "#c9621a", borderRadius: 3 }} />
+              </div>
+              <span style={{ fontSize: 9, color: "rgba(255,255,255,0.45)", fontWeight: 700, minWidth: 24 }}>{specialHave}/{SPECIAL.length}</span>
             </div>
           </button>
         )}
@@ -1050,6 +1069,29 @@ export default function App() {
               {view === "duplicates" ? "No duplicates yet" : "Album complete!"}
             </div>
           </div>
+        ) : view === "groups" ? (
+          // Grouped by group A-L
+          GROUPS.map(g => {
+            const groupTeams = TEAMS.filter(t => t.group === g);
+            return (
+              <div key={g} style={{ marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
+                  <div style={{
+                    fontFamily: "'Black Han Sans', sans-serif",
+                    background: "rgba(255,255,255,0.08)",
+                    color: "#f5c842", fontSize: 12, letterSpacing: 1,
+                    padding: "3px 10px", borderRadius: 20,
+                  }}>GROUP {g}</div>
+                  <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+                  {groupTeams.map(team => (
+                    <StickerCard key={team.code} team={team} stickers={stickers[team.code]} onClick={() => setActiveTeam(team.code)} />
+                  ))}
+                </div>
+              </div>
+            );
+          })
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, paddingBottom: 24 }}>
             {visibleTeams.map(team => (
