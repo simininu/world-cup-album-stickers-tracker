@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -673,8 +673,11 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
         {/* Header */}
         <div style={{ background: "linear-gradient(135deg, #0a1f0f, #1a4a2e)", borderBottom: "2px solid #f5c842", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>🧧 Pack Tracker</div>
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{totalPacks} packs · €{totalSpent.toFixed(2)} spent</div>
+            <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Package size={20} color="#f5c842" strokeWidth={1.5} />
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>Pack Tracker</div>
+          </div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>Track your pack purchases</div>
           </div>
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
         </div>
@@ -938,11 +941,6 @@ export default function App() {
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Sticker Tracker</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
-              <button onClick={() => setShowPacks(true)} style={{
-                background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
-                borderRadius: 10, padding: "9px 14px",
-                fontFamily: "'Black Han Sans', sans-serif", fontSize: 13, cursor: "pointer",
-              }}>🧧 {packs.reduce((s, p) => s + p.qty, 0)}</button>
               <button onClick={() => setShowSettings(true)} style={{
                 background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: 10, padding: "9px 12px", cursor: "pointer",
@@ -963,6 +961,8 @@ export default function App() {
               </div>
               <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 6 }}>{stats.miss} missing</div>
             </button>
+
+            {/* Swaps card */}
             <button onClick={() => setView(view === "duplicates" ? "all" : "duplicates")} style={{
               flex: 1, background: view === "duplicates" ? "rgba(245,166,35,0.2)" : "rgba(255,255,255,0.06)",
               borderRadius: 14, padding: "14px 12px", border: view === "duplicates" ? "1px solid #f5a623" : "1px solid transparent",
@@ -970,8 +970,20 @@ export default function App() {
               cursor: "pointer",
             }}>
               <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>Swaps</div>
-              <Repeat2 size={28} color="#f5a623" strokeWidth={1.5} />
-              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5a623", fontSize: 28, lineHeight: 1 }}>{stats.dup}</div>
+              <Repeat2 size={24} color="#f5a623" strokeWidth={1.5} />
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5a623", fontSize: 24, lineHeight: 1 }}>{stats.dup}</div>
+            </button>
+
+            {/* Pack Tracker card */}
+            <button onClick={() => setShowPacks(true)} style={{
+              flex: 1, background: "rgba(255,255,255,0.06)",
+              borderRadius: 14, padding: "14px 12px", border: "1px solid transparent",
+              display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
+              cursor: "pointer",
+            }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>Packs</div>
+              <Package size={24} color="#27ae60" strokeWidth={1.5} />
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#27ae60", fontSize: 24, lineHeight: 1 }}>{packs.reduce((s, p) => s + p.qty, 0)}</div>
             </button>
           </div>
         </div>
