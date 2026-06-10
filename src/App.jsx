@@ -187,17 +187,13 @@ function StickerCard({ team, stickers, onClick }) {
       overflow: "hidden",
       cursor: "pointer",
       padding: 0,
-      boxShadow: isComplete
-        ? `0 4px 16px rgba(39,174,96,0.4)`
-        : dupCount > 0
-        ? `0 4px 16px rgba(245,166,35,0.35)`
-        : "0 2px 8px rgba(0,0,0,0.25)",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.25)",
       transform: "translateZ(0)",
       transition: "box-shadow 0.2s, transform 0.15s",
     }}>
       {/* Color strip — status only */}
       <div style={{
-        background: isComplete ? "#27ae60" : dupCount > 0 ? "#f5a623" : "#2d6e47",
+        background: "#2d6e47",
         height: 7,
       }} />
 
