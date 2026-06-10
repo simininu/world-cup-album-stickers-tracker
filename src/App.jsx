@@ -175,7 +175,6 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
                   display: "flex", flexDirection: "column", alignItems: "center", gap: 1,
                 }}>
                 <span style={{ color: col, fontWeight: 800, fontSize: 15, fontFamily: "monospace" }}>{n}</span>
-                {isSpecial && <span style={{ fontSize: 8, color: C.gold }}>✦</span>}
                 {state === 2 && <span style={{ fontSize: 8, color: C.dup }}>2×</span>}
               </button>
             );
