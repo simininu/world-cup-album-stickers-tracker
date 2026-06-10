@@ -163,6 +163,10 @@ const css = `
     70% { transform: scale(0.95) rotate(1deg); }
     100% { transform: scale(1) rotate(0deg); }
   }
+  @keyframes splashIn {
+    0% { opacity: 0; transform: scale(0.92); }
+    100% { opacity: 1; transform: scale(1); }
+  }
   .sticker-pop { animation: stickerPop 0.35s cubic-bezier(.36,.07,.19,.97); }
   * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
   body { margin: 0; background: #0a1f0f; }
@@ -460,15 +464,133 @@ function ShareSheet({ stickers, onClose }) {
   );
 }
 
-// ─── Main App ─────────────────────────────────────────────────────────────────
+const PACKS_KEY = "copa2026_packs";
+
+function loadPacks() {
+  try {
+    const saved = localStorage.getItem(PACKS_KEY);
+    if (saved) return JSON.parse(saved);
+  } catch (e) {}
+  return [];
+}
+
+// ─── Packs Modal ──────────────────────────────────────────────────────────────
+function PacksModal({ packs, onAdd, onRemove, onClose }) {
+  const [qty, setQty] = useState("1");
+  const [price, setPrice] = useState("1.50");
+
+  const totalPacks = packs.reduce((s, p) => s + p.qty, 0);
+  const totalSpent = packs.reduce((s, p) => s + p.qty * p.price, 0);
+  const avgPrice = totalPacks > 0 ? totalSpent / totalPacks : 0;
+
+  function handleAdd() {
+    const q = parseInt(qty);
+    const p = parseFloat(price.replace(",", "."));
+    if (!q || q < 1 || !p || p <= 0) return;
+    onAdd({ id: Date.now(), qty: q, price: p, date: new Date().toLocaleDateString("en-GB") });
+    setQty("1");
+    setPrice("1.50");
+  }
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.8)",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      zIndex: 100, padding: 16,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0a1f0f", borderRadius: 16, width: "100%", maxWidth: 420,
+        border: "2px solid #f5c842", overflow: "hidden", maxHeight: "85vh",
+        display: "flex", flexDirection: "column",
+      }}>
+        {/* Header */}
+        <div style={{ background: "linear-gradient(135deg, #0a1f0f, #1a4a2e)", borderBottom: "2px solid #f5c842", padding: "14px 16px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>🧧 Pack Tracker</div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{totalPacks} packs · €{totalSpent.toFixed(2)} spent</div>
+          </div>
+          <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
+        </div>
+
+        {/* Summary */}
+        <div style={{ display: "flex", gap: 8, padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
+          {[
+            { label: "Packs", value: totalPacks },
+            { label: "Total spent", value: `€${totalSpent.toFixed(2)}` },
+            { label: "Avg / pack", value: `€${avgPrice.toFixed(2)}` },
+          ].map(s => (
+            <div key={s.label} style={{ flex: 1, background: "rgba(255,255,255,0.05)", borderRadius: 8, padding: "8px 6px", textAlign: "center" }}>
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18 }}>{s.value}</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 0.5 }}>{s.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Add purchase */}
+        <div style={{ padding: "12px 16px", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
+          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Add purchase</div>
+          <div style={{ display: "flex", gap: 8 }}>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>Packs</div>
+              <input
+                type="number" min="1" value={qty}
+                onChange={e => setQty(e.target.value)}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+              />
+            </div>
+            <div style={{ flex: 1 }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>Price each (€)</div>
+              <input
+                type="number" min="0" step="0.01" value={price}
+                onChange={e => setPrice(e.target.value)}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-end" }}>
+              <button onClick={handleAdd} style={{ background: "#f5c842", color: "#0a1f0f", border: "none", borderRadius: 8, padding: "8px 14px", fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer" }}>+ Add</button>
+            </div>
+          </div>
+        </div>
+
+        {/* History */}
+        <div style={{ overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 6 }}>
+          {packs.length === 0 ? (
+            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "24px 0", fontSize: 13 }}>No purchases yet</div>
+          ) : [...packs].reverse().map(p => (
+            <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.05)", borderRadius: 8, padding: "10px 12px" }}>
+              <div>
+                <div style={{ color: "#f5f0e8", fontSize: 13, fontWeight: 700 }}>{p.qty} pack{p.qty > 1 ? "s" : ""} · €{(p.qty * p.price).toFixed(2)}</div>
+                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>€{p.price.toFixed(2)} each · {p.date}</div>
+              </div>
+              <button onClick={() => onRemove(p.id)} style={{ background: "rgba(255,255,255,0.08)", border: "none", color: "rgba(255,255,255,0.4)", borderRadius: 6, width: 28, height: 28, cursor: "pointer", fontSize: 14 }}>✕</button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 export default function App() {
   const [stickers, setStickers] = useState(loadStickers);
+  const [packs, setPacks] = useState(loadPacks);
+  const [splash, setSplash] = useState(true);
+  const [splashFading, setSplashFading] = useState(false);
   const [activeTeam, setActiveTeam] = useState(null);
   const [showSpecial, setShowSpecial] = useState(false);
   const [showShare, setShowShare] = useState(false);
+  const [showPacks, setShowPacks] = useState(false);
   const [view, setView] = useState("all");
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers)); }, [stickers]);
+  useEffect(() => { localStorage.setItem(PACKS_KEY, JSON.stringify(packs)); }, [packs]);
+  useEffect(() => {
+    const t1 = setTimeout(() => setSplashFading(true), 2000);
+    const t2 = setTimeout(() => setSplash(false), 2600);
+    return () => { clearTimeout(t1); clearTimeout(t2); };
+  }, []);
+
+  function addPack(p) { setPacks(prev => [...prev, p]); }
+  function removePack(id) { setPacks(prev => prev.filter(p => p.id !== id)); }
 
   const stats = getStats(stickers);
   const pct = Math.round((stats.have + stats.dup) / stats.total * 100);
@@ -504,6 +626,40 @@ export default function App() {
   return (
     <div style={{ minHeight: "100vh", background: "#0a1f0f", fontFamily: "'Inter', system-ui, sans-serif" }}>
 
+      {/* Splash screen */}
+      {splash && (
+        <div style={{
+          position: "fixed", inset: 0, zIndex: 999,
+          background: "linear-gradient(160deg, #0a1f0f 0%, #0f3020 50%, #0a1f0f 100%)",
+          display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          opacity: splashFading ? 0 : 1,
+          transition: "opacity 0.6s ease",
+          pointerEvents: splashFading ? "none" : "all",
+        }}>
+          <div style={{ animation: "splashIn 0.6s ease forwards", textAlign: "center" }}>
+            <div style={{ fontSize: 72, marginBottom: 16, lineHeight: 1 }}>⚽</div>
+            <div style={{
+              fontFamily: "'Black Han Sans', sans-serif",
+              color: "#f5c842", fontSize: 36,
+              letterSpacing: 2, lineHeight: 1, marginBottom: 6,
+            }}>WORLD CUP</div>
+            <div style={{
+              fontFamily: "'Black Han Sans', sans-serif",
+              color: "#fff", fontSize: 52,
+              letterSpacing: 4, lineHeight: 1, marginBottom: 20,
+            }}>2026</div>
+            <div style={{
+              color: "rgba(255,255,255,0.35)", fontSize: 12,
+              letterSpacing: 3, textTransform: "uppercase",
+            }}>Sticker Tracker</div>
+          </div>
+          <div style={{
+            position: "absolute", bottom: 40,
+            color: "rgba(255,255,255,0.2)", fontSize: 11, letterSpacing: 1,
+          }}>🇺🇸 🇲🇽 🇨🇦</div>
+        </div>
+      )}
+
       {/* Header */}
       <div style={{
         background: "linear-gradient(160deg, #0a1f0f 0%, #0f3020 100%)",
@@ -517,12 +673,11 @@ export default function App() {
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 22, letterSpacing: 1, lineHeight: 1 }}>WORLD CUP 2026</div>
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Sticker Tracker</div>
             </div>
-            <button onClick={() => setShowShare(true)} style={{
-              background: "#f5c842", color: "#0a1f0f", border: "none",
-              borderRadius: 10, padding: "9px 16px",
-              fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer",
-              letterSpacing: 0.5,
-            }}>📤 SHARE</button>
+            <button onClick={() => setShowPacks(true)} style={{
+                background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 10, padding: "9px 14px",
+                fontFamily: "'Black Han Sans', sans-serif", fontSize: 13, cursor: "pointer",
+              }}>🧧 {packs.reduce((s, p) => s + p.qty, 0)}</button>
           </div>
 
           {/* Stats */}
@@ -628,7 +783,20 @@ export default function App() {
         <div style={{ height: 24 }} />
       </div>
 
-      {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
+      {/* Floating share button */}
+      <button onClick={() => setShowShare(true)} style={{
+        position: "fixed", bottom: 24, right: 20,
+        background: "#f5c842", color: "#0a1f0f", border: "none",
+        borderRadius: 50, padding: "14px 20px",
+        fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer",
+        boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
+        zIndex: 50,
+      }}>
+        📤 SHARE
+      </button>
+
+      {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
+      {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}}
       {activeTeam && currentTeam && (
         <TeamModal team={currentTeam} stickers={stickers[activeTeam]} onToggle={(idx) => toggleSticker(activeTeam, idx)} onClose={() => setActiveTeam(null)} />
       )}
