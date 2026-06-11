@@ -297,7 +297,7 @@ function StickerCard({ team, stickers, onClick }) {
 }
 
 // ─── Team Modal ───────────────────────────────────────────────────────────────
-function TeamModal({ team, stickers, onToggle, onClose }) {
+function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev, hasNext }) {
   const [poppingIdx, setPoppingIdx] = useState(null);
 
   function handleTap(idx) {
@@ -409,6 +409,26 @@ function TeamModal({ team, stickers, onToggle, onClose }) {
               );
             })}
           </div>
+        </div>
+
+        {/* Prev / Next navigation */}
+        <div style={{
+          display: "flex", justifyContent: "space-between",
+          padding: "10px 16px 24px", flexShrink: 0,
+          borderTop: "1px solid rgba(255,255,255,0.08)",
+        }}>
+          <button onClick={onPrev} disabled={!hasPrev} style={{
+            background: hasPrev ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.1)", color: hasPrev ? "#f5f0e8" : "rgba(255,255,255,0.2)",
+            borderRadius: 10, padding: "10px 20px", cursor: hasPrev ? "pointer" : "default",
+            fontFamily: "'Black Han Sans', sans-serif", fontSize: 13,
+          }}>← Prev</button>
+          <button onClick={onNext} disabled={!hasNext} style={{
+            background: hasNext ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
+            border: "1px solid rgba(255,255,255,0.1)", color: hasNext ? "#f5f0e8" : "rgba(255,255,255,0.2)",
+            borderRadius: 10, padding: "10px 20px", cursor: hasNext ? "pointer" : "default",
+            fontFamily: "'Black Han Sans', sans-serif", fontSize: 13,
+          }}>Next →</button>
         </div>
       </div>
     </div>
@@ -894,6 +914,14 @@ export default function App() {
   }
 
   const currentTeam = activeTeam ? TEAMS.find(t => t.code === activeTeam) : null;
+  const currentTeamIdx = activeTeam ? TEAMS.findIndex(t => t.code === activeTeam) : -1;
+
+  function goToPrevTeam() {
+    if (currentTeamIdx > 0) setActiveTeam(TEAMS[currentTeamIdx - 1].code);
+  }
+  function goToNextTeam() {
+    if (currentTeamIdx < TEAMS.length - 1) setActiveTeam(TEAMS[currentTeamIdx + 1].code);
+  }
   const specialHave = stickers.special.filter(s => s >= 1).length;
   const specialDup = stickers.special.filter(s => s === 2).length;
 
@@ -1125,7 +1153,16 @@ export default function App() {
       {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} />}
       {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
       {activeTeam && currentTeam && (
-        <TeamModal team={currentTeam} stickers={stickers[activeTeam]} onToggle={(idx) => toggleSticker(activeTeam, idx)} onClose={() => setActiveTeam(null)} />
+        <TeamModal
+          team={currentTeam}
+          stickers={stickers[activeTeam]}
+          onToggle={(idx) => toggleSticker(activeTeam, idx)}
+          onClose={() => setActiveTeam(null)}
+          onPrev={goToPrevTeam}
+          onNext={goToNextTeam}
+          hasPrev={currentTeamIdx > 0}
+          hasNext={currentTeamIdx < TEAMS.length - 1}
+        />
       )}
       {showShare && <ShareSheet stickers={stickers} onClose={() => setShowShare(false)} />}
     </div>
