@@ -174,7 +174,7 @@ function getStats(stickers) {
   return { have, dup, miss, total: SPECIAL.length + TEAMS.length * TEAM_TOTAL };
 }
 
-function buildShareText(stickers) {
+function buildShareText(stickers, promised = {}) {
   const repeated = [], missing = [];
   const specRep = [], specMis = [];
   stickers.special.forEach((s, i) => {
@@ -185,7 +185,10 @@ function buildShareText(stickers) {
   if (specMis.length) missing.push(`Special: ${specMis.join(", ")}`);
   TEAMS.forEach(t => {
     const rep = [], mis = [];
-    stickers[t.code].forEach((s, i) => { if (s === 2) rep.push(i + 1); if (s === 0) mis.push(i + 1); });
+    stickers[t.code].forEach((s, i) => {
+      if (s === 2 && !promised[`${t.code}-${i}`]) rep.push(i + 1);
+      if (s === 0) mis.push(i + 1);
+    });
     if (rep.length) repeated.push(`${t.flag} ${t.code}: ${rep.join(", ")}`);
     if (mis.length) missing.push(`${t.flag} ${t.code}: ${mis.join(", ")}`);
   });
@@ -673,8 +676,8 @@ function SpecialModal({ stickers, onToggle, onClose }) {
 }
 
 // ─── Share Sheet ──────────────────────────────────────────────────────────────
-function ShareSheet({ stickers, onClose }) {
-  const text = buildShareText(stickers);
+function ShareSheet({ stickers, promised, onClose }) {
+  const text = buildShareText(stickers, promised);
   const [copied, setCopied] = useState(false);
   function copy() {
     navigator.clipboard.writeText(text).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); });
@@ -1321,7 +1324,7 @@ export default function App() {
           onPromise={handlePromise}
         />
       )}
-      {showShare && <ShareSheet stickers={stickers} onClose={() => setShowShare(false)} />}
+      {showShare && <ShareSheet stickers={stickers} promised={promised} onClose={() => setShowShare(false)} />}
     </div>
   );
 }
