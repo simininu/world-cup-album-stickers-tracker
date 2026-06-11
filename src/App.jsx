@@ -935,6 +935,8 @@ export default function App() {
   const [showPacks, setShowPacks] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [view, setView] = useState("all");
+  const [inlinePrompt, setInlinePrompt] = useState(null);
+  const [inlinePromptName, setInlinePromptName] = useState("");
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers)); }, [stickers]);
   useEffect(() => { localStorage.setItem(PROMISED_KEY, JSON.stringify(promised)); }, [promised]);
@@ -1251,26 +1253,55 @@ export default function App() {
                       const playerName = (PLAYERS[team.code] && PLAYERS[team.code][i]) || "";
                       const promisedTo = promised[`${team.code}-${i}`];
                       const isPromised = !!promisedTo;
+                      const key = `${team.code}-${i}`;
                       const bg = isPromised ? "rgba(155,89,182,0.2)" : "rgba(245,166,35,0.15)";
                       const border = isPromised ? "#9b59b6" : "#f5a623";
                       const textCol = isPromised ? "#c39bd3" : "#f5a623";
                       return (
-                        <button key={n} onClick={() => setActiveTeam(team.code)} style={{
+                        <div key={n} style={{
                           background: bg, border: `2px solid ${border}`,
-                          borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
+                          borderRadius: 12, padding: "18px 8px 12px",
                           display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
                           position: "relative", minHeight: 110,
                         }}>
                           <span style={{ position: "absolute", top: 7, left: 8, color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{team.code} {n}</span>
+                          
+                          {/* Promise icon */}
+                          <button onClick={e => { e.stopPropagation(); setInlinePrompt(inlinePrompt === key ? null : key); setInlinePromptName(promisedTo || ""); }} style={{
+                            position: "absolute", top: 5, right: 5,
+                            background: isPromised ? "#9b59b6" : "#f5a623",
+                            border: "none", borderRadius: 6, width: 24, height: 24,
+                            display: "flex", alignItems: "center", justifyContent: "center", cursor: "pointer", padding: 0,
+                          }}>
+                            {isPromised ? <UserCheck size={14} color="#fff" strokeWidth={2} /> : <UserPlus size={14} color="#0a1f0f" strokeWidth={2} />}
+                          </button>
+
                           <div style={{ marginTop: 18, color: textCol }}>
                             {n === 1 ? <Shield size={30} strokeWidth={1.5} /> : n === 13 ? <Users size={30} strokeWidth={1.5} /> : <User size={30} strokeWidth={1.5} />}
                           </div>
                           <span style={{ color: textCol, fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>{playerName}</span>
-                          {isPromised
-                            ? <div style={{ background: "#9b59b6", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700, maxWidth: "90%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>→ {promisedTo}</div>
-                            : <div style={{ background: border, color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
-                          }
-                        </button>
+
+                          {inlinePrompt === key ? (
+                            <div style={{ width: "100%", display: "flex", flexDirection: "column", gap: 4 }}>
+                              <input
+                                autoFocus
+                                value={inlinePromptName}
+                                onChange={e => setInlinePromptName(e.target.value)}
+                                onKeyDown={e => { if (e.key === "Enter") { handlePromise(key, inlinePromptName.trim() || null); setInlinePrompt(null); }}}
+                                placeholder="Name..."
+                                style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, padding: "4px 6px", color: "#fff", fontSize: 16, outline: "none", width: "100%", boxSizing: "border-box" }}
+                              />
+                              <div style={{ display: "flex", gap: 4 }}>
+                                <button onClick={() => { handlePromise(key, inlinePromptName.trim() || null); setInlinePrompt(null); }} style={{ flex: 1, background: "#9b59b6", border: "none", borderRadius: 6, color: "#fff", fontSize: 10, fontWeight: 700, padding: "4px 0", cursor: "pointer" }}>Save</button>
+                                <button onClick={() => setInlinePrompt(null)} style={{ flex: 1, background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 10, padding: "4px 0", cursor: "pointer" }}>Cancel</button>
+                              </div>
+                            </div>
+                          ) : isPromised ? (
+                            <div style={{ background: "#9b59b6", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700, maxWidth: "90%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>→ {promisedTo}</div>
+                          ) : (
+                            <div style={{ background: border, color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
+                          )}
+                        </div>
                       );
                     })}
                   </div>
