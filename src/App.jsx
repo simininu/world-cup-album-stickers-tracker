@@ -1056,12 +1056,13 @@ export default function App() {
         </div>
 
         {/* Special stickers card */}
-        {view === "all" && (
+        {(view === "all" || view === "groups" ||
+          (view === "missing" && stickers.special.some(s => s === 0))
+        ) && (
           <button onClick={() => setShowSpecial(true)} style={{
             width: "100%", background: "rgba(100,45,10,0.3)", border: "1px solid rgba(200,120,40,0.3)",
             borderRadius: 10, overflow: "hidden", cursor: "pointer",
             marginBottom: 16, padding: 0,
-            boxShadow: specialDup > 0 ? "0 4px 16px rgba(245,166,35,0.3)" : "none",
           }}>
             <div style={{ background: "linear-gradient(90deg, #5c2008, #c9621a)", height: 7 }} />
             <div style={{ padding: "10px 14px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
@@ -1090,11 +1091,11 @@ export default function App() {
         )}
 
         {/* Teams */}
-        {visibleTeams.length === 0 ? (
+        {visibleTeams.length === 0 && view !== "duplicates" ? (
           <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: "40px 0" }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>🏆</div>
             <div style={{ fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, color: "#f5c842" }}>
-              {view === "duplicates" ? "No duplicates yet" : "Album complete!"}
+              Album complete!
             </div>
           </div>
         ) : view === "groups" ? (
@@ -1120,6 +1121,87 @@ export default function App() {
               </div>
             );
           })
+        ) : view === "duplicates" ? (
+          // Expanded duplicates view
+          <div style={{ paddingBottom: 24 }}>
+            {/* Special stickers duplicates */}
+            {stickers.special.some(s => s === 2) && (
+              <div style={{ marginBottom: 20 }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ fontSize: 20 }}>✨</span>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Special Stickers</span>
+                  </div>
+                  <span style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                    <Repeat2 size={10} strokeWidth={2} /> {stickers.special.filter(s => s === 2).length} dup{stickers.special.filter(s => s === 2).length > 1 ? "s" : ""}
+                  </span>
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {stickers.special.map((s, i) => {
+                    if (s !== 2) return null;
+                    const sp = SPECIAL[i];
+                    return (
+                      <button key={sp.code} onClick={() => setShowSpecial(true)} style={{
+                        background: "rgba(245,166,35,0.15)", border: "2px solid #f5a623",
+                        borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
+                        display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                        position: "relative", minHeight: 110,
+                      }}>
+                        <span style={{ position: "absolute", top: 7, left: 8, color: "#f5a623", fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{sp.code}</span>
+                        <div style={{ marginTop: 18, color: "#f5a623" }}>
+                          <Star size={30} strokeWidth={1.5} />
+                        </div>
+                        <span style={{ color: "#f5a623", fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>{sp.name}</span>
+                        <div style={{ background: "#f5a623", color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+            {visibleTeams.length === 0 ? (
+              <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: "40px 0" }}>
+                <div style={{ fontSize: 40, marginBottom: 8 }}>🏆</div>
+                <div style={{ fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, color: "#f5c842" }}>No duplicates yet</div>
+              </div>
+            ) : visibleTeams.map(team => {
+              const dups = stickers[team.code].map((s, i) => ({ s, i })).filter(({ s }) => s === 2);
+              return (
+                <div key={team.code} style={{ marginBottom: 20 }}>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <span style={{ fontSize: 20 }}>{team.flag}</span>
+                      <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{team.name}</span>
+                    </div>
+                    <span style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
+                      <Repeat2 size={10} strokeWidth={2} /> {dups.length} dup{dups.length > 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                    {dups.map(({ i }) => {
+                      const n = i + 1;
+                      const playerName = (PLAYERS[team.code] && PLAYERS[team.code][i]) || "";
+                      return (
+                        <button key={n} onClick={() => setActiveTeam(team.code)} style={{
+                          background: "rgba(245,166,35,0.15)", border: "2px solid #f5a623",
+                          borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
+                          display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
+                          position: "relative", minHeight: 110,
+                        }}>
+                          <span style={{ position: "absolute", top: 7, left: 8, color: "#f5a623", fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{team.code} {n}</span>
+                          <div style={{ marginTop: 18, color: "#f5a623" }}>
+                            {n === 1 ? <Shield size={30} strokeWidth={1.5} /> : n === 13 ? <Users size={30} strokeWidth={1.5} /> : <User size={30} strokeWidth={1.5} />}
+                          </div>
+                          <span style={{ color: "#f5a623", fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>{playerName}</span>
+                          <div style={{ background: "#f5a623", color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
         ) : (
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8, paddingBottom: 24 }}>
             {visibleTeams.map(team => (
