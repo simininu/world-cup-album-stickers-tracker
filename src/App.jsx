@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star, UserPlus, UserCheck } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -145,6 +145,7 @@ const PLAYERS = {
 };
 const TEAM_TOTAL = 20;
 const STORAGE_KEY = "copa2026_stickers_v3";
+const PROMISED_KEY = "copa2026_promised";
 
 const INIT_STATE = () => {
   const s = { special: Array(SPECIAL.length).fill(0) };
@@ -297,13 +298,31 @@ function StickerCard({ team, stickers, onClick }) {
 }
 
 // ─── Team Modal ───────────────────────────────────────────────────────────────
-function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev, hasNext }) {
+function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev, hasNext, promised, onPromise }) {
   const [poppingIdx, setPoppingIdx] = useState(null);
+  const [promptIdx, setPromptIdx] = useState(null);
+  const [promptName, setPromptName] = useState("");
 
   function handleTap(idx) {
     setPoppingIdx(idx);
     onToggle(idx);
+    // If cycling away from dup (2→0), clear any promise
+    if (stickers[idx] === 2) {
+      onPromise(`${team.code}-${idx}`, null);
+    }
     setTimeout(() => setPoppingIdx(null), 400);
+  }
+
+  function handlePromiseIcon(e, idx) {
+    e.stopPropagation();
+    setPromptIdx(idx);
+    setPromptName(promised[`${team.code}-${idx}`] || "");
+  }
+
+  function handlePromiseSave() {
+    onPromise(`${team.code}-${promptIdx}`, promptName.trim() || null);
+    setPromptIdx(null);
+    setPromptName("");
   }
 
   const collected = stickers.filter(s => s >= 1).length;
@@ -339,11 +358,12 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
         </div>
 
         {/* Legend */}
-        <div style={{ display: "flex", gap: 14, padding: "0 16px 12px", flexShrink: 0 }}>
+        <div style={{ display: "flex", gap: 14, padding: "0 16px 12px", flexShrink: 0, flexWrap: "wrap" }}>
           {[
             { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.12)", label: "Missing" },
             { bg: "rgba(39,174,96,0.25)", border: "#27ae60", label: "Have" },
             { bg: "rgba(245,166,35,0.25)", border: "#f5a623", label: "Duplicate" },
+            { bg: "rgba(155,89,182,0.2)", border: "#9b59b6", label: "Promised" },
           ].map(l => (
             <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{ width: 12, height: 12, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
@@ -357,10 +377,40 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 10 }}>
             {stickers.map((state, idx) => {
               const n = idx + 1;
+              const promisedTo = promised[`${team.code}-${idx}`];
+              const isPromised = state === 2 && promisedTo;
               let bg, border, textCol, badge;
               if (state === 0) { bg = "rgba(255,255,255,0.05)"; border = "rgba(255,255,255,0.1)"; textCol = "rgba(255,255,255,0.25)"; badge = null; }
               else if (state === 1) { bg = "rgba(39,174,96,0.15)"; border = "#27ae60"; textCol = "#27ae60"; badge = "x1"; }
+              else if (isPromised) { bg = "rgba(155,89,182,0.2)"; border = "#9b59b6"; textCol = "#c39bd3"; badge = null; }
               else { bg = "rgba(245,166,35,0.15)"; border = "#f5a623"; textCol = "#f5a623"; badge = "x2"; }
+
+              // Inline prompt
+              if (promptIdx === idx) {
+                return (
+                  <div key={n} style={{
+                    background: "rgba(155,89,182,0.15)", border: "2px solid #9b59b6",
+                    borderRadius: 12, padding: "10px 8px",
+                    display: "flex", flexDirection: "column", gap: 6, minHeight: 110,
+                    alignItems: "center",
+                  }}>
+                    <span style={{ color: "#c39bd3", fontSize: 9, fontWeight: 800, fontFamily: "monospace", alignSelf: "flex-start" }}>{team.code} {n}</span>
+                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 9 }}>Promised to:</span>
+                    <input
+                      autoFocus
+                      value={promptName}
+                      onChange={e => setPromptName(e.target.value)}
+                      onKeyDown={e => e.key === "Enter" && handlePromiseSave()}
+                      placeholder="Name..."
+                      style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, padding: "4px 6px", color: "#fff", fontSize: 16, outline: "none", width: "100%", boxSizing: "border-box" }}
+                    />
+                    <div style={{ display: "flex", gap: 4, width: "100%" }}>
+                      <button onClick={handlePromiseSave} style={{ flex: 1, background: "#9b59b6", border: "none", borderRadius: 6, color: "#fff", fontSize: 10, fontWeight: 700, padding: "4px 0", cursor: "pointer" }}>Save</button>
+                      <button onClick={() => { setPromptIdx(null); }} style={{ flex: 1, background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 10, padding: "4px 0", cursor: "pointer" }}>Cancel</button>
+                    </div>
+                  </div>
+                );
+              }
 
               return (
                 <button
@@ -373,38 +423,39 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
                     display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
                     position: "relative", minHeight: 110,
                   }}>
-                  {/* Code label top-left */}
-                  <span style={{
-                    position: "absolute", top: 7, left: 8,
-                    color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8,
-                  }}>{team.code} {n}</span>
+                  <span style={{ position: "absolute", top: 7, left: 8, color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{team.code} {n}</span>
 
-                  {/* Player icon */}
+                  {/* Promise icon — only for duplicates */}
+                  {state === 2 && (
+                    <button
+                      onClick={e => handlePromiseIcon(e, idx)}
+                      style={{
+                        position: "absolute", top: 5, right: 5,
+                        background: isPromised ? "#9b59b6" : "#f5a623",
+                        border: "none", borderRadius: 6, width: 24, height: 24,
+                        display: "flex", alignItems: "center", justifyContent: "center",
+                        cursor: "pointer", padding: 0,
+                      }}>
+                      {isPromised
+                        ? <UserCheck size={14} color="#fff" strokeWidth={2} />
+                        : <UserPlus size={14} color="#0a1f0f" strokeWidth={2} />
+                      }
+                    </button>
+                  )}
+
                   <div style={{ opacity: state === 0 ? 0.15 : 0.85, marginTop: 18, color: state === 0 ? "#fff" : textCol }}>
-                    {n === 1
-                      ? <Shield size={30} strokeWidth={1.5} />
-                      : n === 13
-                      ? <Users size={30} strokeWidth={1.5} />
-                      : <User size={30} strokeWidth={1.5} />
-                    }
+                    {n === 1 ? <Shield size={30} strokeWidth={1.5} /> : n === 13 ? <Users size={30} strokeWidth={1.5} /> : <User size={30} strokeWidth={1.5} />}
                   </div>
 
-                  {/* Player name */}
-                  <span style={{
-                    color: state === 0 ? "rgba(255,255,255,0.3)" : textCol,
-                    fontSize: 11, textAlign: "center", lineHeight: 1.3,
-                    padding: "0 2px", wordBreak: "break-word",
-                  }}>
+                  <span style={{ color: state === 0 ? "rgba(255,255,255,0.3)" : textCol, fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>
                     {(PLAYERS[team.code] && PLAYERS[team.code][idx]) || ""}
                   </span>
 
-                  {/* Badge */}
-                  {badge && (
-                    <div style={{
-                      background: border, color: "#0a1f0f",
-                      borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
-                    }}>{badge}</div>
-                  )}
+                  {isPromised ? (
+                    <div style={{ background: "#9b59b6", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700, maxWidth: "90%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>→ {promisedTo}</div>
+                  ) : badge ? (
+                    <div style={{ background: border, color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>{badge}</div>
+                  ) : null}
                 </button>
               );
             })}
@@ -735,7 +786,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
               <input
                 type="number" min="1" value={qty}
                 onChange={e => setQty(e.target.value)}
-                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 16, outline: "none" }}
               />
             </div>
             <div style={{ flex: 1 }}>
@@ -743,7 +794,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
               <input
                 type="number" min="0" step="0.01" value={price}
                 onChange={e => setPrice(e.target.value)}
-                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 14, outline: "none" }}
+                style={{ width: "100%", background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", borderRadius: 8, padding: "8px 10px", color: "#fff", fontSize: 16, outline: "none" }}
               />
             </div>
             <div style={{ display: "flex", alignItems: "flex-end" }}>
@@ -771,12 +822,12 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
   );
 }
 // ─── Settings Modal ───────────────────────────────────────────────────────────
-function SettingsModal({ stickers, packs, onImport, onClose }) {
+function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
   const [imported, setImported] = useState(false);
   const [error, setError] = useState(false);
 
   function handleExport() {
-    const data = JSON.stringify({ stickers, packs });
+    const data = JSON.stringify({ stickers, packs, promised });
     const blob = new Blob([data], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -868,6 +919,9 @@ function SettingsModal({ stickers, packs, onImport, onClose }) {
 
 export default function App() {
   const [stickers, setStickers] = useState(loadStickers);
+  const [promised, setPromised] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(PROMISED_KEY) || "{}"); } catch { return {}; }
+  });
   const [packs, setPacks] = useState(loadPacks);
   const [splash, setSplash] = useState(true);
   const [splashFading, setSplashFading] = useState(false);
@@ -880,7 +934,17 @@ export default function App() {
   const [view, setView] = useState("all");
 
   useEffect(() => { localStorage.setItem(STORAGE_KEY, JSON.stringify(stickers)); }, [stickers]);
+  useEffect(() => { localStorage.setItem(PROMISED_KEY, JSON.stringify(promised)); }, [promised]);
   useEffect(() => { localStorage.setItem(PACKS_KEY, JSON.stringify(packs)); }, [packs]);
+
+  function handlePromise(key, name) {
+    setPromised(prev => {
+      const updated = { ...prev };
+      if (name) updated[key] = name;
+      else delete updated[key];
+      return updated;
+    });
+  }
   useEffect(() => {
     const t1 = setTimeout(() => setSplashFading(true), 2000);
     const t2 = setTimeout(() => setSplash(false), 2600);
@@ -892,6 +956,7 @@ export default function App() {
   function handleImport(data) {
     if (data.stickers) setStickers(data.stickers);
     if (data.packs) setPacks(data.packs);
+    if (data.promised) setPromised(data.promised);
     setShowSettings(false);
   }
 
@@ -927,7 +992,7 @@ export default function App() {
 
   const visibleTeams = TEAMS.filter(team => {
     if (view === "missing") return stickers[team.code].some(s => s === 0);
-    if (view === "duplicates") return stickers[team.code].some(s => s === 2);
+    if (view === "duplicates") return stickers[team.code].some((s, i) => s === 2);
     return true;
   });
 
@@ -1181,19 +1246,27 @@ export default function App() {
                     {dups.map(({ i }) => {
                       const n = i + 1;
                       const playerName = (PLAYERS[team.code] && PLAYERS[team.code][i]) || "";
+                      const promisedTo = promised[`${team.code}-${i}`];
+                      const isPromised = !!promisedTo;
+                      const bg = isPromised ? "rgba(155,89,182,0.2)" : "rgba(245,166,35,0.15)";
+                      const border = isPromised ? "#9b59b6" : "#f5a623";
+                      const textCol = isPromised ? "#c39bd3" : "#f5a623";
                       return (
                         <button key={n} onClick={() => setActiveTeam(team.code)} style={{
-                          background: "rgba(245,166,35,0.15)", border: "2px solid #f5a623",
+                          background: bg, border: `2px solid ${border}`,
                           borderRadius: 12, padding: "18px 8px 12px", cursor: "pointer",
                           display: "flex", flexDirection: "column", alignItems: "center", gap: 8,
                           position: "relative", minHeight: 110,
                         }}>
-                          <span style={{ position: "absolute", top: 7, left: 8, color: "#f5a623", fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{team.code} {n}</span>
-                          <div style={{ marginTop: 18, color: "#f5a623" }}>
+                          <span style={{ position: "absolute", top: 7, left: 8, color: textCol, fontSize: 9, fontWeight: 800, fontFamily: "monospace", opacity: 0.8 }}>{team.code} {n}</span>
+                          <div style={{ marginTop: 18, color: textCol }}>
                             {n === 1 ? <Shield size={30} strokeWidth={1.5} /> : n === 13 ? <Users size={30} strokeWidth={1.5} /> : <User size={30} strokeWidth={1.5} />}
                           </div>
-                          <span style={{ color: "#f5a623", fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>{playerName}</span>
-                          <div style={{ background: "#f5a623", color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
+                          <span style={{ color: textCol, fontSize: 11, textAlign: "center", lineHeight: 1.3, padding: "0 2px", wordBreak: "break-word" }}>{playerName}</span>
+                          {isPromised
+                            ? <div style={{ background: "#9b59b6", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700, maxWidth: "90%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>→ {promisedTo}</div>
+                            : <div style={{ background: border, color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>x2</div>
+                          }
                         </button>
                       );
                     })}
@@ -1230,7 +1303,7 @@ export default function App() {
         <SendHorizontal size={16} strokeWidth={2} /> SHARE
       </button>
 
-      {showSettings && <SettingsModal stickers={stickers} packs={packs} onImport={handleImport} onClose={() => setShowSettings(false)} />}
+      {showSettings && <SettingsModal stickers={stickers} packs={packs} promised={promised} onImport={handleImport} onClose={() => setShowSettings(false)} />}
       {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
       {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} />}
       {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
@@ -1244,6 +1317,8 @@ export default function App() {
           onNext={goToNextTeam}
           hasPrev={currentTeamIdx > 0}
           hasNext={currentTeamIdx < TEAMS.length - 1}
+          promised={promised}
+          onPromise={handlePromise}
         />
       )}
       {showShare && <ShareSheet stickers={stickers} onClose={() => setShowShare(false)} />}
