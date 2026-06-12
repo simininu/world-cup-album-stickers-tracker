@@ -1180,7 +1180,6 @@ export default function App() {
       <div style={{
         background: "#0a1f0f",
         padding: "16px 16px 20px",
-        position: "sticky", top: 0, zIndex: 10,
       }}>
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
