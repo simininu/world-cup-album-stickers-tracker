@@ -7,6 +7,123 @@ fontLink.rel = "stylesheet";
 fontLink.href = "https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Inter:wght@400;600;700;800;900&display=swap";
 document.head.appendChild(fontLink);
 
+const LANG_KEY = "copa2026_lang";
+
+const TRANSLATIONS = {
+  en: {
+    appTitle: "WORLD CUP 2026",
+    appSubtitle: "Sticker Tracker",
+    collection: "Collection",
+    stickers: "stickers",
+    missing: "missing",
+    swaps: "Swaps",
+    packs: "Packs",
+    all: "All",
+    groups: "Groups",
+    duplicates: "Duplicates",
+    missingTab: "Missing",
+    specialStickers: "SPECIAL STICKERS",
+    dup: "dup",
+    dups: "dups",
+    albumComplete: "Album complete!",
+    noDuplicates: "No duplicates yet",
+    group: "GROUP",
+    myCollection: "My Collection",
+    noStickersYet: "No stickers collected yet",
+    sticker: "sticker",
+    close: "Close",
+    collected: "collected",
+    promisedTo: "Promised to:",
+    namePlaceholder: "Name...",
+    save: "Save",
+    cancel: "Cancel",
+    prev: "Prev",
+    next: "Next",
+    legendMissing: "Missing",
+    legendHave: "Have",
+    legendDuplicate: "Duplicate",
+    legendPromised: "Promised",
+    share: "SHARE",
+    shareCollectionStatus: "Share your collection status",
+    copyText: "Copy Text",
+    copied: "Copied!",
+    packTracker: "Pack Tracker",
+    trackPurchases: "Track your pack purchases",
+    totalSpent: "Total spent",
+    avgPerPack: "Avg / pack",
+    addPurchase: "Add purchase",
+    packsLabel: "Packs",
+    priceEach: "Price each (€)",
+    add: "+ Add",
+    noPurchasesYet: "No purchases yet",
+    settings: "Settings",
+    language: "Language",
+    backupDescription: "Export your collection to a file and import it on another device.",
+    exportCollection: "Export collection",
+    downloadBackup: "Download a backup file",
+    importCollection: "Import collection",
+    restoreBackup: "Restore from a backup file",
+    imported: "Imported!",
+    invalidFile: "Invalid file",
+  },
+  pt: {
+    appTitle: "COPA DO MUNDO 2026",
+    appSubtitle: "Álbum de Figurinhas",
+    collection: "Coleção",
+    stickers: "figurinhas",
+    missing: "faltando",
+    swaps: "Trocas",
+    packs: "Pacotes",
+    all: "Todos",
+    groups: "Grupos",
+    duplicates: "Repetidas",
+    missingTab: "Faltando",
+    specialStickers: "FIGURINHAS ESPECIAIS",
+    dup: "repetida",
+    dups: "repetidas",
+    albumComplete: "Álbum completo!",
+    noDuplicates: "Nenhuma repetida ainda",
+    group: "GRUPO",
+    myCollection: "Minha Coleção",
+    noStickersYet: "Nenhuma figurinha ainda",
+    sticker: "figurinha",
+    close: "Fechar",
+    collected: "coletadas",
+    promisedTo: "Prometida para:",
+    namePlaceholder: "Nome...",
+    save: "Salvar",
+    cancel: "Cancelar",
+    prev: "Anterior",
+    next: "Próximo",
+    legendMissing: "Faltando",
+    legendHave: "Tenho",
+    legendDuplicate: "Repetida",
+    legendPromised: "Prometida",
+    share: "COMPARTILHAR",
+    shareCollectionStatus: "Compartilhe o status da sua coleção",
+    copyText: "Copiar Texto",
+    copied: "Copiado!",
+    packTracker: "Controle de Pacotes",
+    trackPurchases: "Controle suas compras de pacotes",
+    totalSpent: "Total gasto",
+    avgPerPack: "Média / pacote",
+    addPurchase: "Adicionar compra",
+    packsLabel: "Pacotes",
+    priceEach: "Preço cada (€)",
+    add: "+ Adicionar",
+    noPurchasesYet: "Nenhuma compra ainda",
+    settings: "Configurações",
+    language: "Idioma",
+    backupDescription: "Exporte sua coleção para um arquivo e importe em outro dispositivo.",
+    exportCollection: "Exportar coleção",
+    downloadBackup: "Baixar arquivo de backup",
+    importCollection: "Importar coleção",
+    restoreBackup: "Restaurar de um arquivo de backup",
+    imported: "Importado!",
+    invalidFile: "Arquivo inválido",
+  },
+};
+
 const SPECIAL = [
   { code: "00", name: "Panini Logo" },
   { code: "FWC1", name: "Official Emblem" },
@@ -224,7 +341,7 @@ styleEl.textContent = css;
 document.head.appendChild(styleEl);
 
 // ─── Sticker Card (team) ──────────────────────────────────────────────────────
-function StickerCard({ team, stickers, onClick }) {
+function StickerCard({ team, stickers, onClick, t }) {
   const haveCount = stickers.filter(s => s >= 1).length;
   const dupCount = stickers.filter(s => s === 2).length;
   const isComplete = haveCount === TEAM_TOTAL;
@@ -292,7 +409,7 @@ function StickerCard({ team, stickers, onClick }) {
         </div>
 
         <div style={{ marginTop: 4, fontSize: 9, fontWeight: 800, height: 13 }}>
-          {dupCount > 0 && <span style={{ color: "#f5a623", display: "flex", alignItems: "center", gap: 3, fontSize: 10 }}><Repeat2 size={10} strokeWidth={2} /> {dupCount} dup{dupCount > 1 ? "s" : ""}</span>}
+          {dupCount > 0 && <span style={{ color: "#f5a623", display: "flex", alignItems: "center", gap: 3, fontSize: 10 }}><Repeat2 size={10} strokeWidth={2} /> {dupCount} {dupCount > 1 ? t("dups") : t("dup")}</span>}
           {isComplete && <span style={{ color: "#27ae60" }}>✓ Complete</span>}
         </div>
       </div>
@@ -301,7 +418,7 @@ function StickerCard({ team, stickers, onClick }) {
 }
 
 // ─── Team Modal ───────────────────────────────────────────────────────────────
-function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev, hasNext, promised, onPromise }) {
+function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev, hasNext, promised, onPromise, t }) {
   const [poppingIdx, setPoppingIdx] = useState(null);
   const [promptIdx, setPromptIdx] = useState(null);
   const [promptName, setPromptName] = useState("");
@@ -349,8 +466,8 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
             <div>
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{team.name}</div>
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>
-                {collected}/20 collected
-                {dups > 0 && <span style={{ color: "#f5a623", marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 3 }}><Repeat2 size={11} strokeWidth={2} /> {dups} dup{dups > 1 ? "s" : ""}</span>}
+                {collected}/20 {t("collected")}
+                {dups > 0 && <span style={{ color: "#f5a623", marginLeft: 8, display: "inline-flex", alignItems: "center", gap: 3 }}><Repeat2 size={11} strokeWidth={2} /> {dups} {dups > 1 ? t("dups") : t("dup")}</span>}
               </div>
             </div>
           </div>
@@ -363,10 +480,10 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
         {/* Legend */}
         <div style={{ display: "flex", gap: 14, padding: "0 16px 12px", flexShrink: 0, flexWrap: "wrap" }}>
           {[
-            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.12)", label: "Missing" },
-            { bg: "rgba(39,174,96,0.25)", border: "#27ae60", label: "Have" },
-            { bg: "rgba(245,166,35,0.25)", border: "#f5a623", label: "Duplicate" },
-            { bg: "rgba(155,89,182,0.2)", border: "#9b59b6", label: "Promised" },
+            { bg: "rgba(255,255,255,0.06)", border: "rgba(255,255,255,0.12)", label: t("legendMissing") },
+            { bg: "rgba(39,174,96,0.25)", border: "#27ae60", label: t("legendHave") },
+            { bg: "rgba(245,166,35,0.25)", border: "#f5a623", label: t("legendDuplicate") },
+            { bg: "rgba(155,89,182,0.2)", border: "#9b59b6", label: t("legendPromised") },
           ].map(l => (
             <div key={l.label} style={{ display: "flex", alignItems: "center", gap: 5 }}>
               <div style={{ width: 12, height: 12, borderRadius: 3, background: l.bg, border: `1.5px solid ${l.border}` }} />
@@ -398,18 +515,18 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
                     alignItems: "center",
                   }}>
                     <span style={{ color: "#c39bd3", fontSize: 9, fontWeight: 800, fontFamily: "monospace", alignSelf: "flex-start" }}>{team.code} {n}</span>
-                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 9 }}>Promised to:</span>
+                    <span style={{ color: "rgba(255,255,255,0.5)", fontSize: 9 }}>{t("promisedTo")}</span>
                     <input
                       autoFocus
                       value={promptName}
                       onChange={e => setPromptName(e.target.value)}
                       onKeyDown={e => e.key === "Enter" && handlePromiseSave()}
-                      placeholder="Name..."
+                      placeholder={t("namePlaceholder")}
                       style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, padding: "4px 6px", color: "#fff", fontSize: 16, outline: "none", width: "100%", boxSizing: "border-box" }}
                     />
                     <div style={{ display: "flex", gap: 4, width: "100%" }}>
-                      <button onClick={handlePromiseSave} style={{ flex: 1, background: "#9b59b6", border: "none", borderRadius: 6, color: "#fff", fontSize: 10, fontWeight: 700, padding: "4px 0", cursor: "pointer" }}>Save</button>
-                      <button onClick={() => { setPromptIdx(null); }} style={{ flex: 1, background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 10, padding: "4px 0", cursor: "pointer" }}>Cancel</button>
+                      <button onClick={handlePromiseSave} style={{ flex: 1, background: "#9b59b6", border: "none", borderRadius: 6, color: "#fff", fontSize: 10, fontWeight: 700, padding: "4px 0", cursor: "pointer" }}>{t("save")}</button>
+                      <button onClick={() => { setPromptIdx(null); }} style={{ flex: 1, background: "rgba(255,255,255,0.08)", border: "none", borderRadius: 6, color: "rgba(255,255,255,0.5)", fontSize: 10, padding: "4px 0", cursor: "pointer" }}>{t("cancel")}</button>
                     </div>
                   </div>
                 );
@@ -476,13 +593,13 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
             border: "1px solid rgba(255,255,255,0.1)", color: hasPrev ? "#f5f0e8" : "rgba(255,255,255,0.2)",
             borderRadius: 10, padding: "10px 20px", cursor: hasPrev ? "pointer" : "default",
             fontFamily: "'Black Han Sans', sans-serif", fontSize: 13,
-          }}>← Prev</button>
+          }}>← {t("prev")}</button>
           <button onClick={onNext} disabled={!hasNext} style={{
             background: hasNext ? "rgba(255,255,255,0.08)" : "rgba(255,255,255,0.03)",
             border: "1px solid rgba(255,255,255,0.1)", color: hasNext ? "#f5f0e8" : "rgba(255,255,255,0.2)",
             borderRadius: 10, padding: "10px 20px", cursor: hasNext ? "pointer" : "default",
             fontFamily: "'Black Han Sans', sans-serif", fontSize: 13,
-          }}>Next →</button>
+          }}>{t("next")} →</button>
         </div>
       </div>
     </div>
@@ -490,7 +607,7 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
 }
 
 // ─── Collection Modal ────────────────────────────────────────────────────────
-function CollectionModal({ stickers, onClose }) {
+function CollectionModal({ stickers, onClose, t }) {
   const teamsWithStickers = TEAMS.filter(t => t.stickers
     ? false
     : stickers[t.code].some(s => s >= 1)
@@ -509,7 +626,7 @@ function CollectionModal({ stickers, onClose }) {
       }}>
         {/* Header */}
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
-          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 22 }}>My Collection <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>({Object.values(stickers).flat().filter(s => s >= 1).length})</span></div>
+          <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 22 }}>{t("myCollection")} <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 16, fontFamily: "'Inter', sans-serif", fontWeight: 400 }}>({Object.values(stickers).flat().filter(s => s >= 1).length})</span></div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
             borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
@@ -520,7 +637,7 @@ function CollectionModal({ stickers, onClose }) {
         <div style={{ overflowY: "auto", padding: "0 14px 24px" }}>
           {teamsWithStickers.length === 0 ? (
             <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "40px 0", fontSize: 14 }}>
-              No stickers collected yet
+              {t("noStickersYet")}
             </div>
           ) : teamsWithStickers.map(team => {
             const collected = stickers[team.code]
@@ -538,7 +655,7 @@ function CollectionModal({ stickers, onClose }) {
                   <span style={{
                     background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.5)",
                     borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600,
-                  }}>{collected.length} sticker{collected.length !== 1 ? "s" : ""}</span>
+                  }}>{collected.length} {t("stickers")}</span>
                 </div>
 
                 {/* Sticker cards */}
@@ -587,7 +704,7 @@ function CollectionModal({ stickers, onClose }) {
 }
 
 // ─── Special Modal ────────────────────────────────────────────────────────────
-function SpecialModal({ stickers, onToggle, onClose }) {
+function SpecialModal({ stickers, onToggle, onClose, t }) {
   const [poppingIdx, setPoppingIdx] = useState(null);
 
   function handleTap(idx) {
@@ -609,9 +726,9 @@ function SpecialModal({ stickers, onToggle, onClose }) {
       }}>
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div>
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>✨ Special Stickers</div>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>✨ {t("specialStickers")}</div>
             <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12 }}>
-              {stickers.filter(s => s >= 1).length}/{SPECIAL.length} collected
+              {stickers.filter(s => s >= 1).length}/{SPECIAL.length} {t("collected")}
             </div>
           </div>
           <button onClick={onClose} style={{
@@ -676,7 +793,7 @@ function SpecialModal({ stickers, onToggle, onClose }) {
 }
 
 // ─── Share Sheet ──────────────────────────────────────────────────────────────
-function ShareSheet({ stickers, promised, onClose }) {
+function ShareSheet({ stickers, promised, onClose, t }) {
   const text = buildShareText(stickers, promised);
   const [copied, setCopied] = useState(false);
   function copy() {
@@ -696,7 +813,7 @@ function ShareSheet({ stickers, promised, onClose }) {
           <button onClick={onClose} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#fff", borderRadius: 8, width: 32, height: 32, cursor: "pointer", fontSize: 16 }}>✕</button>
         </div>
         <div style={{ padding: 16 }}>
-          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 10 }}>Copy and paste this text anywhere — anyone can read it without installing anything:</p>
+          <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 10 }}>{t("shareCollectionStatus")}</p>
           <textarea readOnly value={text} style={{
             width: "100%", background: "#0f2d1a", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8,
             padding: "10px 12px", color: "#f5f0e8", fontSize: 12, fontFamily: "monospace",
@@ -708,7 +825,7 @@ function ShareSheet({ stickers, promised, onClose }) {
             color: copied ? "#fff" : "#0a1f0f",
             border: "none", borderRadius: 10, padding: "12px 0",
             fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, cursor: "pointer",
-          }}>{copied ? "✓ Copied!" : "📋 Copy text"}</button>
+          }}>{copied ? "✓ " + t("copied") : "📋 " + t("copyText")}</button>
         </div>
       </div>
     </div>
@@ -726,7 +843,7 @@ function loadPacks() {
 }
 
 // ─── Packs Modal ──────────────────────────────────────────────────────────────
-function PacksModal({ packs, onAdd, onRemove, onClose }) {
+function PacksModal({ packs, onAdd, onRemove, onClose, t }) {
   const [qty, setQty] = useState("1");
   const [price, setPrice] = useState("1.50");
 
@@ -758,7 +875,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Package size={22} color="#f5f0e8" strokeWidth={1.5} />
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>Pack Tracker</div>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{t("packTracker")}</div>
           </div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
@@ -769,9 +886,9 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
         {/* Summary */}
         <div style={{ display: "flex", gap: 8, padding: "0 16px 12px", flexShrink: 0 }}>
           {[
-            { label: "Packs", value: totalPacks },
-            { label: "Total spent", value: `€${totalSpent.toFixed(2)}` },
-            { label: "Avg / pack", value: `€${avgPrice.toFixed(2)}` },
+            { label: t("packsLabel"), value: totalPacks },
+            { label: t("totalSpent"), value: `€${totalSpent.toFixed(2)}` },
+            { label: t("avgPerPack"), value: `€${avgPrice.toFixed(2)}` },
           ].map(s => (
             <div key={s.label} style={{ flex: 1, background: "rgba(255,255,255,0.06)", borderRadius: 10, padding: "10px 6px", textAlign: "center" }}>
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 18 }}>{s.value}</div>
@@ -782,10 +899,10 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
 
         {/* Add purchase */}
         <div style={{ padding: "12px 16px", borderTop: "1px solid rgba(255,255,255,0.08)", borderBottom: "1px solid rgba(255,255,255,0.08)", flexShrink: 0 }}>
-          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>Add purchase</div>
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>{t("addPurchase")}</div>
           <div style={{ display: "flex", gap: 8 }}>
             <div style={{ flex: 1 }}>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>Packs</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>{t("packsLabel")}</div>
               <input
                 type="number" min="1" value={qty}
                 onChange={e => setQty(e.target.value)}
@@ -793,7 +910,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
               />
             </div>
             <div style={{ flex: 1 }}>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>Price each (€)</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, marginBottom: 4 }}>{t("priceEach")}</div>
               <input
                 type="number" min="0" step="0.01" value={price}
                 onChange={e => setPrice(e.target.value)}
@@ -801,7 +918,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
               />
             </div>
             <div style={{ display: "flex", alignItems: "flex-end" }}>
-              <button onClick={handleAdd} style={{ background: "#f5c842", color: "#0a1f0f", border: "none", borderRadius: 8, padding: "8px 14px", fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer" }}>+ Add</button>
+              <button onClick={handleAdd} style={{ background: "#f5c842", color: "#0a1f0f", border: "none", borderRadius: 8, padding: "8px 14px", fontFamily: "'Black Han Sans', sans-serif", fontSize: 14, cursor: "pointer" }}>{t("add")}</button>
             </div>
           </div>
         </div>
@@ -809,7 +926,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
         {/* History */}
         <div style={{ overflowY: "auto", padding: 12, display: "flex", flexDirection: "column", gap: 6 }}>
           {packs.length === 0 ? (
-            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "24px 0", fontSize: 13 }}>No purchases yet</div>
+            <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "24px 0", fontSize: 13 }}>{t("noPurchasesYet")}</div>
           ) : [...packs].reverse().map(p => (
             <div key={p.id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", background: "rgba(255,255,255,0.05)", borderRadius: 10, padding: "10px 12px" }}>
               <div>
@@ -825,7 +942,7 @@ function PacksModal({ packs, onAdd, onRemove, onClose }) {
   );
 }
 // ─── Settings Modal ───────────────────────────────────────────────────────────
-function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
+function SettingsModal({ stickers, packs, promised, onImport, onClose, t, lang, setLang }) {
   const [imported, setImported] = useState(false);
   const [error, setError] = useState(false);
 
@@ -873,7 +990,7 @@ function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
         <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
             <Settings size={22} color="#f5f0e8" strokeWidth={1.5} />
-            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>Settings</div>
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{t("settings")}</div>
           </div>
           <button onClick={onClose} style={{
             background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
@@ -882,8 +999,24 @@ function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
         </div>
 
         <div style={{ padding: "0 16px 32px", display: "flex", flexDirection: "column", gap: 10 }}>
-          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4 }}>
-            Export your collection to a file and import it on another device.
+          {/* Language selector */}
+          <div>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, textTransform: "uppercase", letterSpacing: 0.5, marginBottom: 8 }}>{t("language")}</div>
+            <div style={{ display: "flex", gap: 8 }}>
+              {[{ code: "en", label: "English" }, { code: "pt", label: "Português" }].map(l => (
+                <button key={l.code} onClick={() => setLang(l.code)} style={{
+                  flex: 1, background: lang === l.code ? "#f5c842" : "rgba(255,255,255,0.06)",
+                  color: lang === l.code ? "#0a1f0f" : "#f5f0e8",
+                  border: "1px solid " + (lang === l.code ? "#f5c842" : "rgba(255,255,255,0.12)"),
+                  borderRadius: 10, padding: "10px 0", cursor: "pointer",
+                  fontFamily: "'Black Han Sans', sans-serif", fontSize: 13,
+                }}>{l.label}</button>
+              ))}
+            </div>
+          </div>
+
+          <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4, marginTop: 6 }}>
+            {t("backupDescription")}
           </div>
 
           {/* Export */}
@@ -894,8 +1027,8 @@ function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
           }}>
             <div style={{ color: "#f5c842", fontSize: 22 }}>📤</div>
             <div>
-              <div style={{ color: "#f5f0e8", fontWeight: 700, fontSize: 14 }}>Export collection</div>
-              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>Download a backup file</div>
+              <div style={{ color: "#f5f0e8", fontWeight: 700, fontSize: 14 }}>{t("exportCollection")}</div>
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{t("downloadBackup")}</div>
             </div>
           </button>
 
@@ -909,9 +1042,9 @@ function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
             <div style={{ fontSize: 22 }}>{imported ? "✅" : error ? "❌" : "📥"}</div>
             <div>
               <div style={{ color: imported ? "#27ae60" : error ? "#e74c3c" : "#f5f0e8", fontWeight: 700, fontSize: 14 }}>
-                {imported ? "Imported!" : error ? "Invalid file" : "Import collection"}
+                {imported ? t("imported") : error ? t("invalidFile") : t("importCollection")}
               </div>
-              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>Restore from a backup file</div>
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, marginTop: 2 }}>{t("restoreBackup")}</div>
             </div>
           </label>
         </div>
@@ -922,6 +1055,9 @@ function SettingsModal({ stickers, packs, promised, onImport, onClose }) {
 
 export default function App() {
   const [stickers, setStickers] = useState(loadStickers);
+  const [lang, setLang] = useState(() => localStorage.getItem(LANG_KEY) || "en");
+  const t = (key) => TRANSLATIONS[lang][key] || TRANSLATIONS.en[key] || key;
+  useEffect(() => { localStorage.setItem(LANG_KEY, lang); }, [lang]);
   const [promised, setPromised] = useState(() => {
     try { return JSON.parse(localStorage.getItem(PROMISED_KEY) || "{}"); } catch { return {}; }
   });
@@ -1031,7 +1167,7 @@ export default function App() {
             <div style={{
               color: "rgba(255,255,255,0.35)", fontSize: 12,
               letterSpacing: 3, textTransform: "uppercase",
-            }}>Sticker Tracker</div>
+            }}>{t("appSubtitle")}</div>
           </div>
           <div style={{
             position: "absolute", bottom: 40,
@@ -1049,8 +1185,8 @@ export default function App() {
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
             <div>
-              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 22, letterSpacing: 1, lineHeight: 1 }}>WORLD CUP 2026</div>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>Sticker Tracker</div>
+              <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 22, letterSpacing: 1, lineHeight: 1 }}>{t("appTitle")}</div>
+              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>{t("appSubtitle")}</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
               <button onClick={() => setShowSettings(true)} style={{
@@ -1065,13 +1201,13 @@ export default function App() {
           <div style={{ display: "flex", gap: 10 }}>
             {/* Progress card */}
             <button onClick={() => setShowCollection(true)} style={{ flex: 2, background: "rgba(255,255,255,0.06)", borderRadius: 14, padding: "14px 16px", border: "none", textAlign: "left", cursor: "pointer" }}>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>Collection</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1, marginBottom: 6 }}>{t("collection")}</div>
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#fff", fontSize: 40, lineHeight: 1, marginBottom: 4 }}>{pct}%</div>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 10 }}>{stats.have + stats.dup} of {stats.total} stickers</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 10 }}>{stats.have + stats.dup} {lang === "pt" ? "de" : "of"} {stats.total} {t("stickers")}</div>
               <div style={{ height: 4, background: "rgba(255,255,255,0.1)", borderRadius: 4, overflow: "hidden" }}>
                 <div style={{ height: "100%", width: `${pct}%`, background: "linear-gradient(90deg, #27ae60, #f5c842)", borderRadius: 4, transition: "width 0.4s" }} />
               </div>
-              <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 6 }}>{stats.miss} missing</div>
+              <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 10, marginTop: 6 }}>{stats.miss} {t("missing")}</div>
             </button>
 
             {/* Swaps card */}
@@ -1081,7 +1217,7 @@ export default function App() {
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
               cursor: "pointer",
             }}>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>Swaps</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>{t("swaps")}</div>
               <Repeat2 size={24} color="#f5a623" strokeWidth={1.5} />
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5a623", fontSize: 24, lineHeight: 1 }}>{stats.dup}</div>
             </button>
@@ -1093,7 +1229,7 @@ export default function App() {
               display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6,
               cursor: "pointer",
             }}>
-              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>Packs</div>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 10, textTransform: "uppercase", letterSpacing: 1 }}>{t("packs")}</div>
               <Package size={24} color="#27ae60" strokeWidth={1.5} />
               <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#27ae60", fontSize: 24, lineHeight: 1 }}>{packs.reduce((s, p) => s + p.qty, 0)}</div>
             </button>
@@ -1106,10 +1242,10 @@ export default function App() {
         {/* Filter tabs */}
         <div style={{ display: "flex", gap: 6, marginBottom: 14 }}>
           {[
-            { key: "all", label: "All", icon: null },
-            { key: "groups", label: "Groups", icon: null },
-            { key: "duplicates", label: "Duplicates", icon: <Repeat2 size={12} strokeWidth={2} /> },
-            { key: "missing", label: "Missing", icon: <X size={12} strokeWidth={2.5} /> },
+            { key: "all", label: t("all"), icon: null },
+            { key: "groups", label: t("groups"), icon: null },
+            { key: "duplicates", label: t("duplicates"), icon: <Repeat2 size={12} strokeWidth={2} /> },
+            { key: "missing", label: t("missingTab"), icon: <X size={12} strokeWidth={2.5} /> },
           ].map(f => (
             <button key={f.key} onClick={() => setView(f.key)} style={{
               background: view === f.key ? "#f5c842" : "rgba(255,255,255,0.08)",
@@ -1139,8 +1275,8 @@ export default function App() {
               <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
                 <span style={{ fontSize: 24 }}>✨</span>
                 <div style={{ textAlign: "left" }}>
-                  <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 13 }}>SPECIAL STICKERS</div>
-                  {specialDup > 0 && <div style={{ fontSize: 11, color: "#f5a623", display: "flex", alignItems: "center", gap: 3 }}><Repeat2 size={10} strokeWidth={2} /> {specialDup} dup{specialDup > 1 ? "s" : ""}</div>}
+                  <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 13 }}>{t("specialStickers")}</div>
+                  {specialDup > 0 && <div style={{ fontSize: 11, color: "#f5a623", display: "flex", alignItems: "center", gap: 3 }}><Repeat2 size={10} strokeWidth={2} /> {specialDup} {specialDup > 1 ? t("dups") : t("dup")}</div>}
                 </div>
               </div>
               <div style={{ textAlign: "right" }}>
@@ -1165,7 +1301,7 @@ export default function App() {
           <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: "40px 0" }}>
             <div style={{ fontSize: 40, marginBottom: 8 }}>🏆</div>
             <div style={{ fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, color: "#f5c842" }}>
-              Album complete!
+              {t("albumComplete")}
             </div>
           </div>
         ) : view === "groups" ? (
@@ -1180,12 +1316,12 @@ export default function App() {
                     background: "rgba(255,255,255,0.08)",
                     color: "#f5c842", fontSize: 12, letterSpacing: 1,
                     padding: "3px 10px", borderRadius: 20,
-                  }}>GROUP {g}</div>
+                  }}>{t("group")} {g}</div>
                   <div style={{ flex: 1, height: 1, background: "rgba(255,255,255,0.08)" }} />
                 </div>
                 <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
                   {groupTeams.map(team => (
-                    <StickerCard key={team.code} team={team} stickers={stickers[team.code]} onClick={() => setActiveTeam(team.code)} />
+                    <StickerCard key={team.code} team={team} stickers={stickers[team.code]} onClick={() => setActiveTeam(team.code)} t={t} />
                   ))}
                 </div>
               </div>
@@ -1200,7 +1336,7 @@ export default function App() {
                 <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                     <span style={{ fontSize: 20 }}>✨</span>
-                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>Special Stickers</span>
+                    <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{t("specialStickers")}</span>
                   </div>
                   <span style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
                     <Repeat2 size={10} strokeWidth={2} /> {stickers.special.filter(s => s === 2).length} dup{stickers.special.filter(s => s === 2).length > 1 ? "s" : ""}
@@ -1232,7 +1368,7 @@ export default function App() {
             {visibleTeams.length === 0 ? (
               <div style={{ textAlign: "center", color: "rgba(255,255,255,0.4)", padding: "40px 0" }}>
                 <div style={{ fontSize: 40, marginBottom: 8 }}>🏆</div>
-                <div style={{ fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, color: "#f5c842" }}>No duplicates yet</div>
+                <div style={{ fontFamily: "'Black Han Sans', sans-serif", fontSize: 16, color: "#f5c842" }}>{t("noDuplicates")}</div>
               </div>
             ) : visibleTeams.map(team => {
               const dups = stickers[team.code].map((s, i) => ({ s, i })).filter(({ s }) => s === 2);
@@ -1244,7 +1380,7 @@ export default function App() {
                       <span style={{ color: "#fff", fontWeight: 700, fontSize: 15 }}>{team.name}</span>
                     </div>
                     <span style={{ background: "rgba(245,166,35,0.15)", color: "#f5a623", borderRadius: 20, padding: "2px 10px", fontSize: 11, fontWeight: 600, display: "flex", alignItems: "center", gap: 4 }}>
-                      <Repeat2 size={10} strokeWidth={2} /> {dups.length} dup{dups.length > 1 ? "s" : ""}
+                      <Repeat2 size={10} strokeWidth={2} /> {dups.length} {dups.length > 1 ? t("dups") : t("dup")}
                     </span>
                   </div>
                   <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
@@ -1288,7 +1424,7 @@ export default function App() {
                                 value={inlinePromptName}
                                 onChange={e => setInlinePromptName(e.target.value)}
                                 onKeyDown={e => { if (e.key === "Enter") { handlePromise(key, inlinePromptName.trim() || null); setInlinePrompt(null); }}}
-                                placeholder="Name..."
+                                placeholder={t("namePlaceholder")}
                                 style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, padding: "4px 6px", color: "#fff", fontSize: 16, outline: "none", width: "100%", boxSizing: "border-box" }}
                               />
                               <div style={{ display: "flex", gap: 4 }}>
@@ -1317,6 +1453,7 @@ export default function App() {
                 team={team}
                 stickers={stickers[team.code]}
                 onClick={() => setActiveTeam(team.code)}
+                t={t}
               />
             ))}
           </div>
@@ -1334,13 +1471,13 @@ export default function App() {
         boxShadow: "0 4px 20px rgba(0,0,0,0.4)",
         zIndex: 50, display: "flex", alignItems: "center", gap: 8,
       }}>
-        <SendHorizontal size={16} strokeWidth={2} /> SHARE
+        <SendHorizontal size={16} strokeWidth={2} /> {t("share")}
       </button>
 
-      {showSettings && <SettingsModal stickers={stickers} packs={packs} promised={promised} onImport={handleImport} onClose={() => setShowSettings(false)} />}
-      {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} />}
-      {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} />}
-      {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} />}
+      {showSettings && <SettingsModal stickers={stickers} packs={packs} promised={promised} onImport={handleImport} onClose={() => setShowSettings(false)} t={t} lang={lang} setLang={setLang} />}
+      {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} t={t} />}
+      {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} t={t} />}
+      {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} t={t} />}
       {activeTeam && currentTeam && (
         <TeamModal
           team={currentTeam}
@@ -1353,9 +1490,10 @@ export default function App() {
           hasNext={currentTeamIdx < TEAMS.length - 1}
           promised={promised}
           onPromise={handlePromise}
+          t={t}
         />
       )}
-      {showShare && <ShareSheet stickers={stickers} promised={promised} onClose={() => setShowShare(false)} />}
+      {showShare && <ShareSheet stickers={stickers} promised={promised} onClose={() => setShowShare(false)} t={t} />}
     </div>
   );
 }
