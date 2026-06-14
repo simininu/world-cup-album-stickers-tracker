@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star, UserPlus, UserCheck } from "lucide-react";
+import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star, UserPlus, UserCheck, Calendar, MapPin } from "lucide-react";
 
 // Google Font injection
 const fontLink = document.createElement("link");
@@ -37,6 +37,7 @@ const TRANSLATIONS = {
     namePlaceholder: "Name...",
     save: "Save",
     cancel: "Cancel",
+    clear: "Clear",
     prev: "Prev",
     next: "Next",
     legendMissing: "Missing",
@@ -65,6 +66,17 @@ const TRANSLATIONS = {
     restoreBackup: "Restore from a backup file",
     imported: "Imported!",
     invalidFile: "Invalid file",
+    matches: "Matches",
+    upcoming: "Upcoming",
+    results: "Results",
+    standings: "Standings",
+    live: "LIVE",
+    today: "Today",
+    tomorrow: "Tomorrow",
+    winner: "Winner",
+    loser: "Loser",
+    noMatchesFound: "No matches found",
+    loadingScores: "Loading scores...",
   },
   pt: {
     appTitle: "COPA DO MUNDO 2026",
@@ -94,6 +106,7 @@ const TRANSLATIONS = {
     save: "Salvar",
     cancel: "Cancelar",
     prev: "Anterior",
+    clear: "Limpar",
     next: "Próximo",
     legendMissing: "Faltando",
     legendHave: "Tenho",
@@ -121,6 +134,17 @@ const TRANSLATIONS = {
     restoreBackup: "Restaurar de um arquivo de backup",
     imported: "Importado!",
     invalidFile: "Arquivo inválido",
+    matches: "Jogos",
+    upcoming: "Próximos",
+    results: "Resultados",
+    standings: "Classificação",
+    live: "AO VIVO",
+    today: "Hoje",
+    tomorrow: "Amanhã",
+    winner: "Vencedor",
+    loser: "Perdedor",
+    noMatchesFound: "Nenhum jogo encontrado",
+    loadingScores: "Carregando placares...",
   },
 };
 
@@ -260,6 +284,126 @@ const PLAYERS = {
   "GHA": ["Team Logo","Richard Ofori","Abdul Manaf Nurudeen","Daniel Amartey","Alexander Djiku","Tariq Lamptey","Abdul Rahman Baba","Gideon Mensah","Alidu Seidu","Thomas Partey","Salis Abdul Samed","Mohammed Kudus","Team Photo","Antoine Semenyo","Ernest Nuamah","Kamaldeen Sulemana","Issahaku Abdul Fatawu","Inaki Williams","Jordan Ayew","Andre Ayew"],
   "PAN": ["Team Logo","Luis Mejia","Orlando Mosquera","Eric Davis","Fidel Escobar","Michael Murillo","Andres Andrade","Jose Cordoba","Cesar Blackman","Adalberto Carrasquilla","Aníbal Godoy","Edgar Barcenas","Team Photo","Ismael Díaz","José Luiz Rodriguez","Alberto Quintero","Cerdigo Waterman","Edgardo Fariña","Rolando Blackburn","Jose Fajardo"],
 };
+const MATCHES = [
+  {n:1,r:"Matchday 1",u:"2026-06-11T19:00:00Z",t1:"MEX",t2:"RSA",g:"A",v:"Mexico City"},
+  {n:2,r:"Matchday 1",u:"2026-06-12T02:00:00Z",t1:"KOR",t2:"CZE",g:"A",v:"Guadalajara (Zapopan)"},
+  {n:3,r:"Matchday 8",u:"2026-06-18T16:00:00Z",t1:"CZE",t2:"RSA",g:"A",v:"Atlanta"},
+  {n:4,r:"Matchday 8",u:"2026-06-19T01:00:00Z",t1:"MEX",t2:"KOR",g:"A",v:"Guadalajara (Zapopan)"},
+  {n:5,r:"Matchday 14",u:"2026-06-25T01:00:00Z",t1:"CZE",t2:"MEX",g:"A",v:"Mexico City"},
+  {n:6,r:"Matchday 14",u:"2026-06-25T01:00:00Z",t1:"RSA",t2:"KOR",g:"A",v:"Monterrey (Guadalupe)"},
+  {n:7,r:"Matchday 2",u:"2026-06-12T19:00:00Z",t1:"CAN",t2:"BIH",g:"B",v:"Toronto"},
+  {n:8,r:"Matchday 3",u:"2026-06-13T19:00:00Z",t1:"QAT",t2:"SUI",g:"B",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:9,r:"Matchday 8",u:"2026-06-18T19:00:00Z",t1:"SUI",t2:"BIH",g:"B",v:"Los Angeles (Inglewood)"},
+  {n:10,r:"Matchday 8",u:"2026-06-18T22:00:00Z",t1:"CAN",t2:"QAT",g:"B",v:"Vancouver"},
+  {n:11,r:"Matchday 14",u:"2026-06-24T19:00:00Z",t1:"SUI",t2:"CAN",g:"B",v:"Vancouver"},
+  {n:12,r:"Matchday 14",u:"2026-06-24T19:00:00Z",t1:"BIH",t2:"QAT",g:"B",v:"Seattle"},
+  {n:13,r:"Matchday 3",u:"2026-06-13T22:00:00Z",t1:"BRA",t2:"MAR",g:"C",v:"New York/New Jersey (East Rutherford)"},
+  {n:14,r:"Matchday 3",u:"2026-06-14T01:00:00Z",t1:"HAI",t2:"SCO",g:"C",v:"Boston (Foxborough)"},
+  {n:15,r:"Matchday 9",u:"2026-06-19T22:00:00Z",t1:"SCO",t2:"MAR",g:"C",v:"Boston (Foxborough)"},
+  {n:16,r:"Matchday 9",u:"2026-06-20T01:00:00Z",t1:"BRA",t2:"HAI",g:"C",v:"Philadelphia"},
+  {n:17,r:"Matchday 14",u:"2026-06-24T22:00:00Z",t1:"SCO",t2:"BRA",g:"C",v:"Miami (Miami Gardens)"},
+  {n:18,r:"Matchday 14",u:"2026-06-24T22:00:00Z",t1:"MAR",t2:"HAI",g:"C",v:"Atlanta"},
+  {n:19,r:"Matchday 2",u:"2026-06-13T01:00:00Z",t1:"USA",t2:"PAR",g:"D",v:"Los Angeles (Inglewood)"},
+  {n:20,r:"Matchday 3",u:"2026-06-14T04:00:00Z",t1:"AUS",t2:"TUR",g:"D",v:"Vancouver"},
+  {n:21,r:"Matchday 9",u:"2026-06-19T19:00:00Z",t1:"USA",t2:"AUS",g:"D",v:"Seattle"},
+  {n:22,r:"Matchday 9",u:"2026-06-20T04:00:00Z",t1:"TUR",t2:"PAR",g:"D",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:23,r:"Matchday 15",u:"2026-06-26T02:00:00Z",t1:"TUR",t2:"USA",g:"D",v:"Los Angeles (Inglewood)"},
+  {n:24,r:"Matchday 15",u:"2026-06-26T02:00:00Z",t1:"PAR",t2:"AUS",g:"D",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:25,r:"Matchday 4",u:"2026-06-14T17:00:00Z",t1:"GER",t2:"CUW",g:"E",v:"Houston"},
+  {n:26,r:"Matchday 4",u:"2026-06-14T23:00:00Z",t1:"CIV",t2:"ECU",g:"E",v:"Philadelphia"},
+  {n:27,r:"Matchday 10",u:"2026-06-20T20:00:00Z",t1:"GER",t2:"CIV",g:"E",v:"Toronto"},
+  {n:28,r:"Matchday 10",u:"2026-06-21T00:00:00Z",t1:"ECU",t2:"CUW",g:"E",v:"Kansas City"},
+  {n:29,r:"Matchday 15",u:"2026-06-25T20:00:00Z",t1:"CUW",t2:"CIV",g:"E",v:"Philadelphia"},
+  {n:30,r:"Matchday 15",u:"2026-06-25T20:00:00Z",t1:"ECU",t2:"GER",g:"E",v:"New York/New Jersey (East Rutherford)"},
+  {n:31,r:"Matchday 4",u:"2026-06-14T20:00:00Z",t1:"NED",t2:"JPN",g:"F",v:"Dallas (Arlington)"},
+  {n:32,r:"Matchday 4",u:"2026-06-15T02:00:00Z",t1:"SWE",t2:"TUN",g:"F",v:"Monterrey (Guadalupe)"},
+  {n:33,r:"Matchday 10",u:"2026-06-20T17:00:00Z",t1:"NED",t2:"SWE",g:"F",v:"Houston"},
+  {n:34,r:"Matchday 10",u:"2026-06-21T04:00:00Z",t1:"TUN",t2:"JPN",g:"F",v:"Monterrey (Guadalupe)"},
+  {n:35,r:"Matchday 15",u:"2026-06-25T23:00:00Z",t1:"JPN",t2:"SWE",g:"F",v:"Dallas (Arlington)"},
+  {n:36,r:"Matchday 15",u:"2026-06-25T23:00:00Z",t1:"TUN",t2:"NED",g:"F",v:"Kansas City"},
+  {n:37,r:"Matchday 5",u:"2026-06-15T19:00:00Z",t1:"BEL",t2:"EGY",g:"G",v:"Seattle"},
+  {n:38,r:"Matchday 5",u:"2026-06-16T01:00:00Z",t1:"IRN",t2:"NZL",g:"G",v:"Los Angeles (Inglewood)"},
+  {n:39,r:"Matchday 11",u:"2026-06-21T19:00:00Z",t1:"BEL",t2:"IRN",g:"G",v:"Los Angeles (Inglewood)"},
+  {n:40,r:"Matchday 11",u:"2026-06-22T01:00:00Z",t1:"NZL",t2:"EGY",g:"G",v:"Vancouver"},
+  {n:41,r:"Matchday 16",u:"2026-06-27T03:00:00Z",t1:"EGY",t2:"IRN",g:"G",v:"Seattle"},
+  {n:42,r:"Matchday 16",u:"2026-06-27T03:00:00Z",t1:"NZL",t2:"BEL",g:"G",v:"Vancouver"},
+  {n:43,r:"Matchday 5",u:"2026-06-15T16:00:00Z",t1:"ESP",t2:"CPV",g:"H",v:"Atlanta"},
+  {n:44,r:"Matchday 5",u:"2026-06-15T22:00:00Z",t1:"KSA",t2:"URU",g:"H",v:"Miami (Miami Gardens)"},
+  {n:45,r:"Matchday 11",u:"2026-06-21T16:00:00Z",t1:"ESP",t2:"KSA",g:"H",v:"Atlanta"},
+  {n:46,r:"Matchday 11",u:"2026-06-21T22:00:00Z",t1:"URU",t2:"CPV",g:"H",v:"Miami (Miami Gardens)"},
+  {n:47,r:"Matchday 16",u:"2026-06-27T00:00:00Z",t1:"CPV",t2:"KSA",g:"H",v:"Houston"},
+  {n:48,r:"Matchday 16",u:"2026-06-27T00:00:00Z",t1:"URU",t2:"ESP",g:"H",v:"Guadalajara (Zapopan)"},
+  {n:49,r:"Matchday 6",u:"2026-06-16T19:00:00Z",t1:"FRA",t2:"SEN",g:"I",v:"New York/New Jersey (East Rutherford)"},
+  {n:50,r:"Matchday 6",u:"2026-06-16T22:00:00Z",t1:"IRQ",t2:"NOR",g:"I",v:"Boston (Foxborough)"},
+  {n:51,r:"Matchday 12",u:"2026-06-22T21:00:00Z",t1:"FRA",t2:"IRQ",g:"I",v:"Philadelphia"},
+  {n:52,r:"Matchday 12",u:"2026-06-23T00:00:00Z",t1:"NOR",t2:"SEN",g:"I",v:"New York/New Jersey (East Rutherford)"},
+  {n:53,r:"Matchday 16",u:"2026-06-26T19:00:00Z",t1:"NOR",t2:"FRA",g:"I",v:"Boston (Foxborough)"},
+  {n:54,r:"Matchday 16",u:"2026-06-26T19:00:00Z",t1:"SEN",t2:"IRQ",g:"I",v:"Toronto"},
+  {n:55,r:"Matchday 6",u:"2026-06-17T01:00:00Z",t1:"ARG",t2:"ALG",g:"J",v:"Kansas City"},
+  {n:56,r:"Matchday 6",u:"2026-06-17T04:00:00Z",t1:"AUT",t2:"JOR",g:"J",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:57,r:"Matchday 12",u:"2026-06-22T17:00:00Z",t1:"ARG",t2:"AUT",g:"J",v:"Dallas (Arlington)"},
+  {n:58,r:"Matchday 12",u:"2026-06-23T03:00:00Z",t1:"JOR",t2:"ALG",g:"J",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:59,r:"Matchday 17",u:"2026-06-28T02:00:00Z",t1:"ALG",t2:"AUT",g:"J",v:"Kansas City"},
+  {n:60,r:"Matchday 17",u:"2026-06-28T02:00:00Z",t1:"JOR",t2:"ARG",g:"J",v:"Dallas (Arlington)"},
+  {n:61,r:"Matchday 7",u:"2026-06-17T17:00:00Z",t1:"POR",t2:"COD",g:"K",v:"Houston"},
+  {n:62,r:"Matchday 7",u:"2026-06-18T02:00:00Z",t1:"UZB",t2:"COL",g:"K",v:"Mexico City"},
+  {n:63,r:"Matchday 13",u:"2026-06-23T17:00:00Z",t1:"POR",t2:"UZB",g:"K",v:"Houston"},
+  {n:64,r:"Matchday 13",u:"2026-06-24T02:00:00Z",t1:"COL",t2:"COD",g:"K",v:"Guadalajara (Zapopan)"},
+  {n:65,r:"Matchday 17",u:"2026-06-27T23:30:00Z",t1:"COL",t2:"POR",g:"K",v:"Miami (Miami Gardens)"},
+  {n:66,r:"Matchday 17",u:"2026-06-27T23:30:00Z",t1:"COD",t2:"UZB",g:"K",v:"Atlanta"},
+  {n:67,r:"Matchday 7",u:"2026-06-17T20:00:00Z",t1:"ENG",t2:"CRO",g:"L",v:"Dallas (Arlington)"},
+  {n:68,r:"Matchday 7",u:"2026-06-17T23:00:00Z",t1:"GHA",t2:"PAN",g:"L",v:"Toronto"},
+  {n:69,r:"Matchday 13",u:"2026-06-23T20:00:00Z",t1:"ENG",t2:"GHA",g:"L",v:"Boston (Foxborough)"},
+  {n:70,r:"Matchday 13",u:"2026-06-23T23:00:00Z",t1:"PAN",t2:"CRO",g:"L",v:"Toronto"},
+  {n:71,r:"Matchday 17",u:"2026-06-27T21:00:00Z",t1:"PAN",t2:"ENG",g:"L",v:"New York/New Jersey (East Rutherford)"},
+  {n:72,r:"Matchday 17",u:"2026-06-27T21:00:00Z",t1:"CRO",t2:"GHA",g:"L",v:"Philadelphia"},
+  {n:73,r:"Round of 32",u:"2026-06-28T19:00:00Z",t1:"2A",t2:"2B",g:"",v:"Los Angeles (Inglewood)"},
+  {n:74,r:"Round of 32",u:"2026-06-29T20:30:00Z",t1:"1E",t2:"3A/B/C/D/F",g:"",v:"Boston (Foxborough)"},
+  {n:75,r:"Round of 32",u:"2026-06-30T01:00:00Z",t1:"1F",t2:"2C",g:"",v:"Monterrey (Guadalupe)"},
+  {n:76,r:"Round of 32",u:"2026-06-29T17:00:00Z",t1:"1C",t2:"2F",g:"",v:"Houston"},
+  {n:77,r:"Round of 32",u:"2026-06-30T21:00:00Z",t1:"1I",t2:"3C/D/F/G/H",g:"",v:"New York/New Jersey (East Rutherford)"},
+  {n:78,r:"Round of 32",u:"2026-06-30T17:00:00Z",t1:"2E",t2:"2I",g:"",v:"Dallas (Arlington)"},
+  {n:79,r:"Round of 32",u:"2026-07-01T01:00:00Z",t1:"1A",t2:"3C/E/F/H/I",g:"",v:"Mexico City"},
+  {n:80,r:"Round of 32",u:"2026-07-01T16:00:00Z",t1:"1L",t2:"3E/H/I/J/K",g:"",v:"Atlanta"},
+  {n:81,r:"Round of 32",u:"2026-07-02T00:00:00Z",t1:"1D",t2:"3B/E/F/I/J",g:"",v:"San Francisco Bay Area (Santa Clara)"},
+  {n:82,r:"Round of 32",u:"2026-07-01T20:00:00Z",t1:"1G",t2:"3A/E/H/I/J",g:"",v:"Seattle"},
+  {n:83,r:"Round of 32",u:"2026-07-02T23:00:00Z",t1:"2K",t2:"2L",g:"",v:"Toronto"},
+  {n:84,r:"Round of 32",u:"2026-07-02T19:00:00Z",t1:"1H",t2:"2J",g:"",v:"Los Angeles (Inglewood)"},
+  {n:85,r:"Round of 32",u:"2026-07-03T03:00:00Z",t1:"1B",t2:"3E/F/G/I/J",g:"",v:"Vancouver"},
+  {n:86,r:"Round of 32",u:"2026-07-03T22:00:00Z",t1:"1J",t2:"2H",g:"",v:"Miami (Miami Gardens)"},
+  {n:87,r:"Round of 32",u:"2026-07-04T01:30:00Z",t1:"1K",t2:"3D/E/I/J/L",g:"",v:"Kansas City"},
+  {n:88,r:"Round of 32",u:"2026-07-03T18:00:00Z",t1:"2D",t2:"2G",g:"",v:"Dallas (Arlington)"},
+  {n:89,r:"Round of 16",u:"2026-07-04T21:00:00Z",t1:"W74",t2:"W77",g:"",v:"Philadelphia"},
+  {n:90,r:"Round of 16",u:"2026-07-04T17:00:00Z",t1:"W73",t2:"W75",g:"",v:"Houston"},
+  {n:91,r:"Round of 16",u:"2026-07-05T20:00:00Z",t1:"W76",t2:"W78",g:"",v:"New York/New Jersey (East Rutherford)"},
+  {n:92,r:"Round of 16",u:"2026-07-06T00:00:00Z",t1:"W79",t2:"W80",g:"",v:"Mexico City"},
+  {n:93,r:"Round of 16",u:"2026-07-06T19:00:00Z",t1:"W83",t2:"W84",g:"",v:"Dallas (Arlington)"},
+  {n:94,r:"Round of 16",u:"2026-07-07T00:00:00Z",t1:"W81",t2:"W82",g:"",v:"Seattle"},
+  {n:95,r:"Round of 16",u:"2026-07-07T16:00:00Z",t1:"W86",t2:"W88",g:"",v:"Atlanta"},
+  {n:96,r:"Round of 16",u:"2026-07-07T20:00:00Z",t1:"W85",t2:"W87",g:"",v:"Vancouver"},
+  {n:97,r:"Quarter-final",u:"2026-07-09T20:00:00Z",t1:"W89",t2:"W90",g:"",v:"Boston (Foxborough)"},
+  {n:98,r:"Quarter-final",u:"2026-07-10T19:00:00Z",t1:"W93",t2:"W94",g:"",v:"Los Angeles (Inglewood)"},
+  {n:99,r:"Quarter-final",u:"2026-07-11T21:00:00Z",t1:"W91",t2:"W92",g:"",v:"Miami (Miami Gardens)"},
+  {n:100,r:"Quarter-final",u:"2026-07-12T01:00:00Z",t1:"W95",t2:"W96",g:"",v:"Kansas City"},
+  {n:101,r:"Semi-final",u:"2026-07-14T19:00:00Z",t1:"W97",t2:"W98",g:"",v:"Dallas (Arlington)"},
+  {n:102,r:"Semi-final",u:"2026-07-15T19:00:00Z",t1:"W99",t2:"W100",g:"",v:"Atlanta"},
+  {n:103,r:"Match for third place",u:"2026-07-18T21:00:00Z",t1:"L101",t2:"L102",g:"",v:"Miami (Miami Gardens)"},
+  {n:104,r:"Final",u:"2026-07-19T19:00:00Z",t1:"W101",t2:"W102",g:"",v:"New York/New Jersey (East Rutherford)"}
+];
+
+// Readable labels for knockout-stage placeholder codes
+const KNOCKOUT_LABEL = {
+  "1A":"1st A","1B":"1st B","1C":"1st C","1D":"1st D","1E":"1st E","1F":"1st F","1G":"1st G","1H":"1st H","1I":"1st I","1J":"1st J","1K":"1st K","1L":"1st L",
+  "2A":"2nd A","2B":"2nd B","2C":"2nd C","2D":"2nd D","2E":"2nd E","2F":"2nd F","2G":"2nd G","2H":"2nd H","2I":"2nd I","2J":"2nd J","2K":"2nd K","2L":"2nd L",
+};
+function matchLabel(code, t) {
+  if (KNOCKOUT_LABEL[code]) return KNOCKOUT_LABEL[code];
+  if (code.startsWith("W")) return `${t("winner")} M${code.slice(1)}`;
+  if (code.startsWith("L")) return `${t("loser")} M${code.slice(1)}`;
+  if (code.includes("/")) return `3rd ${code}`;
+  return code;
+}
+
 const TEAM_TOTAL = 20;
 const STORAGE_KEY = "copa2026_stickers_v3";
 const PROMISED_KEY = "copa2026_promised";
@@ -607,7 +751,7 @@ function TeamModal({ team, stickers, onToggle, onClose, onPrev, onNext, hasPrev,
 }
 
 // ─── Collection Modal ────────────────────────────────────────────────────────
-function CollectionModal({ stickers, onClose, t }) {
+function CollectionModal({ stickers, promised, onClose, t }) {
   const teamsWithStickers = TEAMS.filter(t => t.stickers
     ? false
     : stickers[t.code].some(s => s >= 1)
@@ -663,9 +807,11 @@ function CollectionModal({ stickers, onClose, t }) {
                   {collected.map(({ s, i }) => {
                     const n = i + 1;
                     const isDup = s === 2;
-                    const bg = isDup ? "rgba(245,166,35,0.15)" : "rgba(39,174,96,0.15)";
-                    const border = isDup ? "#f5a623" : "#27ae60";
-                    const textCol = isDup ? "#f5a623" : "#27ae60";
+                    const promisedTo = isDup ? promised[`${team.code}-${i}`] : null;
+                    const isPromised = !!promisedTo;
+                    const bg = isPromised ? "rgba(155,89,182,0.2)" : isDup ? "rgba(245,166,35,0.15)" : "rgba(39,174,96,0.15)";
+                    const border = isPromised ? "#9b59b6" : isDup ? "#f5a623" : "#27ae60";
+                    const textCol = isPromised ? "#c39bd3" : isDup ? "#f5a623" : "#27ae60";
                     return (
                       <div key={n} style={{
                         background: bg, border: `2px solid ${border}`,
@@ -686,10 +832,14 @@ function CollectionModal({ stickers, onClose, t }) {
                         }}>
                           {(PLAYERS[team.code] && PLAYERS[team.code][i]) || ""}
                         </span>
-                        <div style={{
-                          background: border, color: "#0a1f0f",
-                          borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
-                        }}>{isDup ? "x2" : "x1"}</div>
+                        {isPromised ? (
+                          <div style={{ background: "#9b59b6", color: "#fff", borderRadius: 20, padding: "2px 8px", fontSize: 9, fontWeight: 700, maxWidth: "90%", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>→ {promisedTo}</div>
+                        ) : (
+                          <div style={{
+                            background: border, color: "#0a1f0f",
+                            borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800,
+                          }}>{isDup ? "x2" : "x1"}</div>
+                        )}
                       </div>
                     );
                   })}
@@ -941,6 +1091,433 @@ function PacksModal({ packs, onAdd, onRemove, onClose, t }) {
     </div>
   );
 }
+// ─── Matches Modal ────────────────────────────────────────────────────────────
+const MANUAL_SCORES_KEY = "copa2026_manual_scores";
+
+// Teams per group, derived from the official group draw
+const GROUP_TEAMS = {
+  A: ["MEX", "RSA", "KOR", "CZE"],
+  B: ["CAN", "BIH", "QAT", "SUI"],
+  C: ["BRA", "MAR", "HAI", "SCO"],
+  D: ["USA", "PAR", "AUS", "TUR"],
+  E: ["GER", "CUW", "CIV", "ECU"],
+  F: ["NED", "JPN", "SWE", "TUN"],
+  G: ["BEL", "EGY", "IRN", "NZL"],
+  H: ["ESP", "CPV", "KSA", "URU"],
+  I: ["FRA", "SEN", "IRQ", "NOR"],
+  J: ["ARG", "ALG", "AUT", "JOR"],
+  K: ["POR", "COD", "UZB", "COL"],
+  L: ["ENG", "CRO", "GHA", "PAN"],
+};
+
+// Compute group tables (P/W/D/L/GF/GA/GD/Pts) from user-entered scores
+function computeGroupStandings(manualScores) {
+  const result = {};
+  Object.entries(GROUP_TEAMS).forEach(([g, codes]) => {
+    const stats = {};
+    codes.forEach(code => { stats[code] = { code, p: 0, w: 0, d: 0, l: 0, gf: 0, ga: 0, gd: 0, pts: 0 }; });
+    MATCHES.filter(m => m.g === g).forEach(m => {
+      const score = manualScores[m.n];
+      if (!score) return;
+      const [s1, s2] = score;
+      const a = stats[m.t1], b = stats[m.t2];
+      a.p++; b.p++;
+      a.gf += s1; a.ga += s2;
+      b.gf += s2; b.ga += s1;
+      if (s1 > s2) { a.w++; a.pts += 3; b.l++; }
+      else if (s1 < s2) { b.w++; b.pts += 3; a.l++; }
+      else { a.d++; b.d++; a.pts++; b.pts++; }
+    });
+    const arr = Object.values(stats);
+    arr.forEach(team => { team.gd = team.gf - team.ga; });
+    arr.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+    result[g] = arr;
+  });
+  return result;
+}
+
+// Rank all 12 third-placed teams; the best 8 advance to the Round of 32
+function computeQualifiedThirds(standings) {
+  const thirds = Object.entries(standings)
+    .filter(([g, arr]) => arr.every(team => team.p === 3))
+    .map(([g, arr]) => ({ group: g, ...arr[2] }));
+  thirds.sort((a, b) => b.pts - a.pts || b.gd - a.gd || b.gf - a.gf);
+  return new Set(thirds.slice(0, 8).map(t => t.group));
+}
+
+// Resolve a placeholder code ("1A", "2A", "3A/B/C/D/F", "W74", "L101") to an actual team code,
+// or return null if it can't be determined yet from the scores entered so far
+function resolveTeam(code, standings, qualifiedThirds, manualScores) {
+  if (TEAMS.find(t => t.code === code)) return code;
+
+  let m = code.match(/^([12])([A-L])$/);
+  if (m) {
+    const grp = standings[m[2]];
+    if (grp && grp.every(t => t.p === 3)) return grp[parseInt(m[1], 10) - 1].code;
+    return null;
+  }
+
+  if (code.match(/^3[A-L](\/[A-L])+$/)) {
+    const groups = code.slice(1).split("/");
+    const candidates = groups.filter(g => qualifiedThirds.has(g) && standings[g] && standings[g].every(t => t.p === 3));
+    if (candidates.length === 1) return standings[candidates[0]][2].code;
+    return null;
+  }
+
+  m = code.match(/^W(\d+)$/);
+  if (m) {
+    const match = MATCHES.find(x => x.n === parseInt(m[1], 10));
+    const score = manualScores[match.n];
+    if (!score) return null;
+    const r1 = resolveTeam(match.t1, standings, qualifiedThirds, manualScores);
+    const r2 = resolveTeam(match.t2, standings, qualifiedThirds, manualScores);
+    if (!r1 || !r2) return null;
+    return score[0] > score[1] ? r1 : score[1] > score[0] ? r2 : null;
+  }
+
+  m = code.match(/^L(\d+)$/);
+  if (m) {
+    const match = MATCHES.find(x => x.n === parseInt(m[1], 10));
+    const score = manualScores[match.n];
+    if (!score) return null;
+    const r1 = resolveTeam(match.t1, standings, qualifiedThirds, manualScores);
+    const r2 = resolveTeam(match.t2, standings, qualifiedThirds, manualScores);
+    if (!r1 || !r2) return null;
+    return score[0] > score[1] ? r2 : score[1] > score[0] ? r1 : null;
+  }
+
+  return null;
+}
+
+// Map full country names (as used by external APIs) to our team codes,
+// used for best-effort auto-fill of scores
+const NAME_TO_CODE = {
+  "Mexico": "MEX", "South Africa": "RSA", "South Korea": "KOR", "Korea Republic": "KOR",
+  "Czechia": "CZE", "Czech Republic": "CZE", "Canada": "CAN",
+  "Bosnia and Herzegovina": "BIH", "Bosnia & Herzegovina": "BIH", "Bosnia-Herzegovina": "BIH", "Bosnia": "BIH",
+  "Qatar": "QAT", "Switzerland": "SUI", "Brazil": "BRA", "Morocco": "MAR", "Haiti": "HAI",
+  "Scotland": "SCO", "USA": "USA", "United States": "USA", "United States of America": "USA", "Paraguay": "PAR",
+  "Australia": "AUS", "Turkey": "TUR", "Türkiye": "TUR", "Germany": "GER",
+  "Curaçao": "CUW", "Curacao": "CUW", "Ivory Coast": "CIV", "Côte d'Ivoire": "CIV",
+  "Cote d'Ivoire": "CIV", "Ecuador": "ECU", "Netherlands": "NED", "Japan": "JPN",
+  "Sweden": "SWE", "Tunisia": "TUN", "Belgium": "BEL", "Egypt": "EGY", "Iran": "IRN",
+  "IR Iran": "IRN", "New Zealand": "NZL", "Spain": "ESP", "Cape Verde": "CPV", "Cabo Verde": "CPV",
+  "Saudi Arabia": "KSA", "Uruguay": "URU", "France": "FRA", "Senegal": "SEN",
+  "Iraq": "IRQ", "Norway": "NOR", "Argentina": "ARG", "Algeria": "ALG", "Austria": "AUT",
+  "Jordan": "JOR", "Portugal": "POR", "DR Congo": "COD", "Congo DR": "COD", "Congo": "COD",
+  "Uzbekistan": "UZB", "Colombia": "COL", "England": "ENG", "Croatia": "CRO",
+  "Ghana": "GHA", "Panama": "PAN",
+};
+
+// Best-effort source for live/recent scores (CORS-enabled, no key required)
+const AUTO_SCORES_URL = "https://wcup2026.org/api/data.php?action=today";
+
+// Try several common field-name shapes to extract a usable {team1,team2,score1,score2} from an API item
+function extractMatchInfo(item) {
+  if (!item || typeof item !== "object") return null;
+  const team1Name = item.team1 || item.home || item.homeTeam || item.home_team || (item.teams && item.teams.home && item.teams.home.name);
+  const team2Name = item.team2 || item.away || item.awayTeam || item.away_team || (item.teams && item.teams.away && item.teams.away.name);
+  if (!team1Name || !team2Name) return null;
+
+  let s1, s2;
+  if (item.score && Array.isArray(item.score.ft)) { s1 = item.score.ft[0]; s2 = item.score.ft[1]; }
+  else if (item.score && item.score.fulltime) { s1 = item.score.fulltime.home; s2 = item.score.fulltime.away; }
+  else if (item.goals) { s1 = item.goals.home; s2 = item.goals.away; }
+  else if (item.home_score !== undefined) { s1 = item.home_score; s2 = item.away_score; }
+  else if (item.score1 !== undefined) { s1 = item.score1; s2 = item.score2; }
+
+  if (s1 === undefined || s2 === undefined || s1 === null || s2 === null) return null;
+  return { team1Name, team2Name, score1: parseInt(s1, 10), score2: parseInt(s2, 10) };
+}
+
+function MatchesModal({ onClose, t, lang }) {
+  const [tab, setTab] = useState("upcoming");
+  const [now] = useState(() => new Date());
+  const [manualScores, setManualScores] = useState(() => {
+    try { return JSON.parse(localStorage.getItem(MANUAL_SCORES_KEY) || "{}"); } catch { return {}; }
+  });
+  const [autoScores, setAutoScores] = useState({});
+  const [editingMatch, setEditingMatch] = useState(null);
+  const [editScore1, setEditScore1] = useState("");
+  const [editScore2, setEditScore2] = useState("");
+
+  useEffect(() => {
+    localStorage.setItem(MANUAL_SCORES_KEY, JSON.stringify(manualScores));
+  }, [manualScores]);
+
+  // Best-effort: try to auto-fill recent/today's scores from a free public API
+  useEffect(() => {
+    fetch(AUTO_SCORES_URL)
+      .then(r => r.json())
+      .then(data => {
+        const items = data.matches || data.results || data.fixtures || [];
+        const found = {};
+        items.forEach(item => {
+          const info = extractMatchInfo(item);
+          if (!info) return;
+          const c1 = NAME_TO_CODE[info.team1Name];
+          const c2 = NAME_TO_CODE[info.team2Name];
+          if (!c1 || !c2) return;
+          const match = MATCHES.find(m =>
+            (m.t1 === c1 && m.t2 === c2) || (m.t1 === c2 && m.t2 === c1)
+          );
+          if (!match) return;
+          found[match.n] = (match.t1 === c1) ? [info.score1, info.score2] : [info.score2, info.score1];
+        });
+        setAutoScores(found);
+      })
+      .catch(() => setAutoScores({}));
+  }, []);
+
+  const groupStandings = computeGroupStandings(manualScores);
+  const qualifiedThirds = computeQualifiedThirds(groupStandings);
+
+  const localTz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  function getScore(match) {
+    return manualScores[match.n] || autoScores[match.n] || null;
+  }
+
+  function isAutoScore(match) {
+    return !manualScores[match.n] && !!autoScores[match.n];
+  }
+
+  function startEditScore(match, current) {
+    setEditingMatch(match.n);
+    setEditScore1(current ? String(current[0]) : "");
+    setEditScore2(current ? String(current[1]) : "");
+  }
+
+  function saveManualScore() {
+    if (editScore1 === "" || editScore2 === "") return;
+    setManualScores(prev => ({ ...prev, [editingMatch]: [parseInt(editScore1, 10) || 0, parseInt(editScore2, 10) || 0] }));
+    setEditingMatch(null);
+  }
+
+  function clearManualScore() {
+    setManualScores(prev => {
+      const updated = { ...prev };
+      delete updated[editingMatch];
+      return updated;
+    });
+    setEditingMatch(null);
+  }
+
+  function formatDateTime(utcStr) {
+    const d = new Date(utcStr);
+    const dateFmt = new Intl.DateTimeFormat(lang === "pt" ? "pt-PT" : "en-GB", {
+      weekday: "short", day: "2-digit", month: "short", timeZone: localTz,
+    });
+    const timeFmt = new Intl.DateTimeFormat(lang === "pt" ? "pt-PT" : "en-GB", {
+      hour: "2-digit", minute: "2-digit", timeZone: localTz,
+    });
+    return { date: dateFmt.format(d), time: timeFmt.format(d) };
+  }
+
+  function isLive(utcStr) {
+    const d = new Date(utcStr);
+    const diffMin = (now - d) / 60000;
+    return diffMin >= 0 && diffMin <= 125; // ~2h05 match window
+  }
+
+  function isPast(utcStr) {
+    const d = new Date(utcStr);
+    return (now - d) / 60000 > 125;
+  }
+
+  const allMatches = MATCHES;
+  const upcoming = allMatches.filter(m => !isPast(m.u)).sort((a, b) => new Date(a.u) - new Date(b.u));
+  const past = allMatches.filter(m => isPast(m.u)).sort((a, b) => new Date(b.u) - new Date(a.u));
+
+  function renderTeam(code) {
+    const resolved = resolveTeam(code, groupStandings, qualifiedThirds, manualScores);
+    if (resolved) {
+      const team = TEAMS.find(x => x.code === resolved);
+      if (team) return { flag: team.flag, name: team.name, resolved: true };
+    }
+    return { flag: "🏳️", name: matchLabel(code, t), resolved: false };
+  }
+
+  function MatchRow({ m }) {
+    const { date, time } = formatDateTime(m.u);
+    const score = getScore(m);
+    const live = isLive(m.u);
+    const t1 = renderTeam(m.t1);
+    const t2 = renderTeam(m.t2);
+    const bothResolved = t1.resolved && t2.resolved;
+    return (
+      <div style={{
+        background: live ? "rgba(245,166,35,0.12)" : "rgba(255,255,255,0.05)",
+        border: live ? "1px solid #f5a623" : "1px solid rgba(255,255,255,0.08)",
+        borderRadius: 12, padding: "12px 14px", marginBottom: 8,
+      }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+          <span style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>{date} · {time}</span>
+          {live ? (
+            <span style={{ background: "#f5a623", color: "#0a1f0f", borderRadius: 20, padding: "2px 8px", fontSize: 10, fontWeight: 800 }}>{t("live")}</span>
+          ) : (
+            <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 10, fontFamily: "monospace" }}>{m.g ? `${t("group")} ${m.g}` : m.r}</span>
+          )}
+        </div>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0 }}>
+            <span style={{ fontSize: 20 }}>{t1.flag}</span>
+            <span style={{ color: "#f5f0e8", fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t1.name}</span>
+          </div>
+          {editingMatch === m.n ? (
+            <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "0 6px" }}>
+              <input
+                type="number" min="0" autoFocus value={editScore1}
+                onChange={e => setEditScore1(e.target.value)}
+                style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
+              />
+              <span style={{ color: "rgba(255,255,255,0.4)" }}>-</span>
+              <input
+                type="number" min="0" value={editScore2}
+                onChange={e => setEditScore2(e.target.value)}
+                style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
+              />
+            </div>
+          ) : score ? (
+            <button onClick={() => startEditScore(m, score)} style={{
+              fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842", fontSize: 18, padding: "0 10px",
+              whiteSpace: "nowrap", background: "none", border: "none", cursor: "pointer",
+              display: "flex", alignItems: "center", gap: 4,
+            }}>
+              {score[0]} - {score[1]}
+              {isAutoScore(m) && <span style={{ width: 6, height: 6, borderRadius: "50%", background: "#27ae60", display: "inline-block" }} />}
+            </button>
+          ) : (bothResolved && isPast(m.u)) ? (
+            <button onClick={() => startEditScore(m, null)} style={{
+              background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)",
+              color: "rgba(255,255,255,0.5)", borderRadius: 8, padding: "4px 10px",
+              fontSize: 12, cursor: "pointer",
+            }}>+</button>
+          ) : (
+            <div style={{ color: "rgba(255,255,255,0.25)", fontSize: 12, padding: "0 10px" }}>vs</div>
+          )}
+          <div style={{ display: "flex", alignItems: "center", gap: 8, flex: 1, minWidth: 0, justifyContent: "flex-end" }}>
+            <span style={{ color: "#f5f0e8", fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", textAlign: "right" }}>{t2.name}</span>
+            <span style={{ fontSize: 20 }}>{t2.flag}</span>
+          </div>
+        </div>
+        {editingMatch === m.n && (
+          <div style={{ display: "flex", gap: 6, marginTop: 8, justifyContent: "center" }}>
+            <button onClick={saveManualScore} style={{ background: "#f5c842", color: "#0a1f0f", border: "none", borderRadius: 6, padding: "4px 14px", fontSize: 11, fontWeight: 700, cursor: "pointer" }}>{t("save")}</button>
+            {manualScores[m.n] && (
+              <button onClick={clearManualScore} style={{ background: "rgba(231,76,60,0.15)", color: "#e74c3c", border: "none", borderRadius: 6, padding: "4px 14px", fontSize: 11, cursor: "pointer" }}>{t("clear")}</button>
+            )}
+            <button onClick={() => setEditingMatch(null)} style={{ background: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.5)", border: "none", borderRadius: 6, padding: "4px 14px", fontSize: 11, cursor: "pointer" }}>{t("cancel")}</button>
+          </div>
+        )}
+        <div style={{ display: "flex", alignItems: "center", gap: 4, marginTop: 8, color: "rgba(255,255,255,0.3)", fontSize: 10 }}>
+          <MapPin size={11} strokeWidth={2} /> {m.v}
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div onClick={onClose} style={{
+      position: "fixed", inset: 0, background: "rgba(0,0,0,0.85)",
+      display: "flex", alignItems: "flex-end", justifyContent: "center",
+      zIndex: 100,
+    }}>
+      <div onClick={e => e.stopPropagation()} style={{
+        background: "#0a1f0f", borderRadius: "20px 20px 0 0", width: "100%", maxWidth: 560,
+        maxHeight: "90vh", display: "flex", flexDirection: "column",
+        boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
+      }}>
+        {/* Header */}
+        <div style={{ padding: "16px 16px 12px", display: "flex", alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+            <Calendar size={22} color="#f5f0e8" strokeWidth={1.5} />
+            <div style={{ fontFamily: "'Black Han Sans', sans-serif", color: "#f5f0e8", fontSize: 20 }}>{t("matches")}</div>
+          </div>
+          <button onClick={onClose} style={{
+            background: "rgba(255,255,255,0.1)", border: "none", color: "#fff",
+            borderRadius: "50%", width: 32, height: 32, padding: 0, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center",
+          }}><X size={16} strokeWidth={2.5} /></button>
+        </div>
+
+        {/* Tabs */}
+        <div style={{ display: "flex", gap: 8, padding: "0 16px 12px", flexShrink: 0 }}>
+          {[
+            { key: "upcoming", label: t("upcoming") },
+            { key: "results", label: t("results") },
+            { key: "standings", label: t("standings") },
+          ].map(tb => (
+            <button key={tb.key} onClick={() => setTab(tb.key)} style={{
+              background: tab === tb.key ? "#f5c842" : "rgba(255,255,255,0.08)",
+              color: tab === tb.key ? "#0a1f0f" : "rgba(255,255,255,0.7)",
+              border: "none", borderRadius: 20, padding: "7px 14px",
+              fontFamily: tab === tb.key ? "'Black Han Sans', sans-serif" : "'Inter', sans-serif",
+              fontWeight: tab === tb.key ? 400 : 600,
+              fontSize: 12, cursor: "pointer", letterSpacing: tab === tb.key ? 0.5 : 0,
+            }}>{tb.label}</button>
+          ))}
+        </div>
+
+        {/* Content */}
+        <div style={{ overflowY: "auto", padding: "0 16px 24px" }}>
+          {tab === "upcoming" && (
+            upcoming.length === 0
+              ? <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "30px 0", fontSize: 13 }}>{t("noMatchesFound")}</div>
+              : upcoming.map(m => <MatchRow key={m.n} m={m} />)
+          )}
+          {tab === "results" && (
+            past.length === 0
+              ? <div style={{ textAlign: "center", color: "rgba(255,255,255,0.3)", padding: "30px 0", fontSize: 13 }}>{t("noMatchesFound")}</div>
+              : past.map(m => <MatchRow key={m.n} m={m} />)
+          )}
+          {tab === "standings" && (
+            Object.entries(groupStandings).map(([groupName, teams]) => (
+              <div key={groupName} style={{ marginBottom: 16 }}>
+                <div style={{
+                  fontFamily: "'Black Han Sans', sans-serif", color: "#f5c842",
+                  fontSize: 12, letterSpacing: 1, marginBottom: 6,
+                  background: "rgba(255,255,255,0.06)", display: "inline-block",
+                  padding: "3px 10px", borderRadius: 20,
+                }}>{t("group").toUpperCase()} {groupName}</div>
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, overflow: "hidden" }}>
+                  {/* Header row */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 24px 24px 24px 24px 24px 32px", padding: "6px 10px", fontSize: 10, color: "rgba(255,255,255,0.35)", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <span></span><span style={{ textAlign: "center" }}>P</span><span style={{ textAlign: "center" }}>V</span><span style={{ textAlign: "center" }}>E</span><span style={{ textAlign: "center" }}>D</span><span style={{ textAlign: "center" }}>SG</span><span style={{ textAlign: "center" }}>Pts</span>
+                  </div>
+                  {teams.map((tm, i) => {
+                    const team = TEAMS.find(x => x.code === tm.code);
+                    const groupStarted = teams.some(x => x.p > 0);
+                    const qualified = groupStarted && (i < 2 || (i === 2 && qualifiedThirds.has(groupName)));
+                    return (
+                      <div key={tm.code} style={{
+                        display: "grid", gridTemplateColumns: "1fr 24px 24px 24px 24px 24px 32px",
+                        padding: "8px 10px", fontSize: 12, color: "#f5f0e8", alignItems: "center",
+                        borderBottom: i < teams.length - 1 ? "1px solid rgba(255,255,255,0.04)" : "none",
+                        borderLeft: qualified ? "3px solid #27ae60" : "3px solid transparent",
+                      }}>
+                        <span style={{ display: "flex", alignItems: "center", gap: 6, overflow: "hidden" }}>
+                          <span style={{ fontSize: 16 }}>{team ? team.flag : "🏳️"}</span>
+                          <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{team ? team.name : tm.code}</span>
+                        </span>
+                        <span style={{ textAlign: "center", color: "rgba(255,255,255,0.6)" }}>{tm.p}</span>
+                        <span style={{ textAlign: "center", color: "rgba(255,255,255,0.6)" }}>{tm.w}</span>
+                        <span style={{ textAlign: "center", color: "rgba(255,255,255,0.6)" }}>{tm.d}</span>
+                        <span style={{ textAlign: "center", color: "rgba(255,255,255,0.6)" }}>{tm.l}</span>
+                        <span style={{ textAlign: "center", color: "rgba(255,255,255,0.6)" }}>{tm.gd > 0 ? `+${tm.gd}` : tm.gd}</span>
+                        <span style={{ textAlign: "center", fontWeight: 800, color: "#f5c842" }}>{tm.pts}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── Settings Modal ───────────────────────────────────────────────────────────
 function SettingsModal({ stickers, packs, promised, onImport, onClose, t, lang, setLang }) {
   const [imported, setImported] = useState(false);
@@ -1070,6 +1647,7 @@ export default function App() {
   const [showShare, setShowShare] = useState(false);
   const [showPacks, setShowPacks] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+  const [showMatches, setShowMatches] = useState(false);
   const [view, setView] = useState("all");
   const [inlinePrompt, setInlinePrompt] = useState(null);
   const [inlinePromptName, setInlinePromptName] = useState("");
@@ -1180,6 +1758,8 @@ export default function App() {
       <div style={{
         background: "#0a1f0f",
         padding: "16px 16px 20px",
+        position: "sticky", top: 0, zIndex: 10,
+        transform: "translateZ(0)", WebkitTransform: "translateZ(0)",
       }}>
         <div style={{ maxWidth: 560, margin: "0 auto" }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
@@ -1188,6 +1768,11 @@ export default function App() {
               <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, letterSpacing: 2, textTransform: "uppercase", marginTop: 2 }}>{t("appSubtitle")}</div>
             </div>
             <div style={{ display: "flex", gap: 8 }}>
+              <button onClick={() => setShowMatches(true)} style={{
+                background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
+                borderRadius: 10, padding: "9px 12px", cursor: "pointer",
+                display: "flex", alignItems: "center",
+              }}><Calendar size={16} strokeWidth={2} /></button>
               <button onClick={() => setShowSettings(true)} style={{
                 background: "rgba(255,255,255,0.1)", color: "#f5f0e8", border: "1px solid rgba(255,255,255,0.2)",
                 borderRadius: 10, padding: "9px 12px", cursor: "pointer",
@@ -1474,8 +2059,9 @@ export default function App() {
       </button>
 
       {showSettings && <SettingsModal stickers={stickers} packs={packs} promised={promised} onImport={handleImport} onClose={() => setShowSettings(false)} t={t} lang={lang} setLang={setLang} />}
+      {showMatches && <MatchesModal onClose={() => setShowMatches(false)} t={t} lang={lang} />}
       {showPacks && <PacksModal packs={packs} onAdd={addPack} onRemove={removePack} onClose={() => setShowPacks(false)} t={t} />}
-      {showCollection && <CollectionModal stickers={stickers} onClose={() => setShowCollection(false)} t={t} />}
+      {showCollection && <CollectionModal stickers={stickers} promised={promised} onClose={() => setShowCollection(false)} t={t} />}
       {showSpecial && <SpecialModal stickers={stickers.special} onToggle={toggleSpecial} onClose={() => setShowSpecial(false)} t={t} />}
       {activeTeam && currentTeam && (
         <TeamModal
