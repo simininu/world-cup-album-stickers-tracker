@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star, UserPlus, UserCheck, Calendar, MapPin } from "lucide-react";
 
 // Google Font injection
@@ -1299,12 +1299,11 @@ function MatchesModal({ onClose, t, lang }) {
 
   function startEditScore(match, current) {
     setEditingMatch(match.n);
-    setEditScore1(current ? String(current[0]) : "");
-    setEditScore2(current ? String(current[1]) : "");
+    setEditScore1(current ? String(current[0]) : "0");
+    setEditScore2(current ? String(current[1]) : "0");
   }
 
   function saveManualScore() {
-    if (editScore1 === "" || editScore2 === "") return;
     setManualScores(prev => ({ ...prev, [editingMatch]: [parseInt(editScore1, 10) || 0, parseInt(editScore2, 10) || 0] }));
     setEditingMatch(null);
   }
@@ -1360,7 +1359,6 @@ function MatchesModal({ onClose, t, lang }) {
     const t1 = renderTeam(m.t1);
     const t2 = renderTeam(m.t2);
     const bothResolved = t1.resolved && t2.resolved;
-    const score2InputRef = useRef(null);
     return (
       <div style={{
         background: live ? "rgba(245,166,35,0.12)" : "rgba(255,255,255,0.05)",
@@ -1381,31 +1379,18 @@ function MatchesModal({ onClose, t, lang }) {
             <span style={{ color: "#f5f0e8", fontSize: 13, fontWeight: 600, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{t1.name}</span>
           </div>
           {editingMatch === m.n ? (
-            <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "0 6px" }}>
-              <input
-                type="tel" inputMode="numeric" pattern="[0-9]*" autoFocus value={editScore1}
-                onFocus={e => e.target.select()}
-                onInput={e => {
-                  const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
-                  setEditScore1(val);
-                  if (val !== "" && score2InputRef.current) {
-                    score2InputRef.current.focus();
-                    score2InputRef.current.click();
-                  }
-                }}
-                onChange={() => {}}
-                style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
-              />
+            <div style={{ display: "flex", alignItems: "center", gap: 6, padding: "0 4px" }}>
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                <button onClick={() => setEditScore1(String((parseInt(editScore1 || "0", 10) + 1)))} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#f5c842", width: 22, height: 18, borderRadius: 4, fontSize: 12, cursor: "pointer", padding: 0 }}>▲</button>
+                <span style={{ width: 24, textAlign: "center", color: "#fff", fontSize: 18, fontFamily: "'Black Han Sans', sans-serif" }}>{editScore1 || "0"}</span>
+                <button onClick={() => setEditScore1(String(Math.max(0, parseInt(editScore1 || "0", 10) - 1)))} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#f5c842", width: 22, height: 18, borderRadius: 4, fontSize: 12, cursor: "pointer", padding: 0 }}>▼</button>
+              </div>
               <span style={{ color: "rgba(255,255,255,0.4)" }}>-</span>
-              <input
-                ref={score2InputRef}
-                type="tel" inputMode="numeric" pattern="[0-9]*" value={editScore2}
-                onFocus={e => e.target.select()}
-                onInput={e => setEditScore2(e.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
-                onChange={() => {}}
-                onKeyDown={e => { if (e.key === "Enter") saveManualScore(); }}
-                style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
-              />
+              <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 2 }}>
+                <button onClick={() => setEditScore2(String((parseInt(editScore2 || "0", 10) + 1)))} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#f5c842", width: 22, height: 18, borderRadius: 4, fontSize: 12, cursor: "pointer", padding: 0 }}>▲</button>
+                <span style={{ width: 24, textAlign: "center", color: "#fff", fontSize: 18, fontFamily: "'Black Han Sans', sans-serif" }}>{editScore2 || "0"}</span>
+                <button onClick={() => setEditScore2(String(Math.max(0, parseInt(editScore2 || "0", 10) - 1)))} style={{ background: "rgba(255,255,255,0.1)", border: "none", color: "#f5c842", width: 22, height: 18, borderRadius: 4, fontSize: 12, cursor: "pointer", padding: 0 }}>▼</button>
+              </div>
             </div>
           ) : score ? (
             <button onClick={() => startEditScore(m, score)} style={{
