@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Shield, User, Users, Repeat2, X, SendHorizontal, Settings, Package, Star, UserPlus, UserCheck, Calendar, MapPin } from "lucide-react";
 
 // Google Font injection
@@ -1247,11 +1247,26 @@ function MatchesModal({ onClose, t, lang }) {
 
   // Best-effort: try to auto-fill recent/today's scores from a free public API
   useEffect(() => {
-    fetch(AUTO_SCORES_URL)
-      .then(r => r.json())
-      .then(data => {
+    function dateStr(d) {
+      return d.toISOString().slice(0, 10);
+    }
+    // Try the last 7 days, in case the API supports a date filter for past results
+    const dates = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date(now);
+      d.setDate(d.getDate() - i);
+      dates.push(dateStr(d));
+    }
+
+    Promise.all(
+      dates.map(d =>
+        fetch(`${AUTO_SCORES_URL}&date=${d}`).then(r => r.json()).catch(() => null)
+      )
+    ).then(results => {
+      const found = {};
+      results.forEach(data => {
+        if (!data) return;
         const items = data.matches || data.results || data.fixtures || [];
-        const found = {};
         items.forEach(item => {
           const info = extractMatchInfo(item);
           if (!info) return;
@@ -1264,9 +1279,9 @@ function MatchesModal({ onClose, t, lang }) {
           if (!match) return;
           found[match.n] = (match.t1 === c1) ? [info.score1, info.score2] : [info.score2, info.score1];
         });
-        setAutoScores(found);
-      })
-      .catch(() => setAutoScores({}));
+      });
+      setAutoScores(found);
+    }).catch(() => setAutoScores({}));
   }, []);
 
   const groupStandings = computeGroupStandings(manualScores);
@@ -1345,6 +1360,7 @@ function MatchesModal({ onClose, t, lang }) {
     const t1 = renderTeam(m.t1);
     const t2 = renderTeam(m.t2);
     const bothResolved = t1.resolved && t2.resolved;
+    const score2InputRef = useRef(null);
     return (
       <div style={{
         background: live ? "rgba(245,166,35,0.12)" : "rgba(255,255,255,0.05)",
@@ -1367,14 +1383,24 @@ function MatchesModal({ onClose, t, lang }) {
           {editingMatch === m.n ? (
             <div style={{ display: "flex", alignItems: "center", gap: 4, padding: "0 6px" }}>
               <input
-                type="number" min="0" autoFocus value={editScore1}
-                onChange={e => setEditScore1(e.target.value)}
+                type="tel" inputMode="numeric" pattern="[0-9]*" autoFocus value={editScore1}
+                onFocus={e => e.target.select()}
+                onChange={e => {
+                  const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
+                  setEditScore1(val);
+                  if (val !== "") {
+                    setTimeout(() => { if (score2InputRef.current) score2InputRef.current.focus(); }, 0);
+                  }
+                }}
                 style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
               />
               <span style={{ color: "rgba(255,255,255,0.4)" }}>-</span>
               <input
-                type="number" min="0" value={editScore2}
-                onChange={e => setEditScore2(e.target.value)}
+                ref={score2InputRef}
+                type="tel" inputMode="numeric" pattern="[0-9]*" value={editScore2}
+                onFocus={e => e.target.select()}
+                onChange={e => setEditScore2(e.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
+                onKeyDown={e => { if (e.key === "Enter") saveManualScore(); }}
                 style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
               />
             </div>
