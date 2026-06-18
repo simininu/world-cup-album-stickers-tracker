@@ -1385,13 +1385,15 @@ function MatchesModal({ onClose, t, lang }) {
               <input
                 type="tel" inputMode="numeric" pattern="[0-9]*" autoFocus value={editScore1}
                 onFocus={e => e.target.select()}
-                onChange={e => {
+                onInput={e => {
                   const val = e.target.value.replace(/[^0-9]/g, "").slice(0, 2);
                   setEditScore1(val);
-                  if (val !== "") {
-                    setTimeout(() => { if (score2InputRef.current) score2InputRef.current.focus(); }, 0);
+                  if (val !== "" && score2InputRef.current) {
+                    score2InputRef.current.focus();
+                    score2InputRef.current.click();
                   }
                 }}
+                onChange={() => {}}
                 style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
               />
               <span style={{ color: "rgba(255,255,255,0.4)" }}>-</span>
@@ -1399,7 +1401,8 @@ function MatchesModal({ onClose, t, lang }) {
                 ref={score2InputRef}
                 type="tel" inputMode="numeric" pattern="[0-9]*" value={editScore2}
                 onFocus={e => e.target.select()}
-                onChange={e => setEditScore2(e.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
+                onInput={e => setEditScore2(e.target.value.replace(/[^0-9]/g, "").slice(0, 2))}
+                onChange={() => {}}
                 onKeyDown={e => { if (e.key === "Enter") saveManualScore(); }}
                 style={{ width: 32, textAlign: "center", background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", borderRadius: 6, color: "#fff", fontSize: 16, padding: "4px 2px", outline: "none" }}
               />
